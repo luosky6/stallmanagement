@@ -1,0 +1,128 @@
+# ==============================================================================
+# StallManagement — .gitignore
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Secrets — NEVER commit these
+# ------------------------------------------------------------------------------
+.env
+*.pem
+*.key
+*.p12
+
+# ------------------------------------------------------------------------------
+# Python
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ------------------------------------------------------------------------------
+# Django
+# ------------------------------------------------------------------------------
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles/            # collectstatic output — regenerated in production
+media/                  # user-uploaded files (if added later)
+
+# Django migrations (whether to commit these is team-dependent;
+# for a new project it is common to commit them)
+# Uncomment the next line to ignore migrations:
+# **/migrations/
+
+# ------------------------------------------------------------------------------
+# Logs (directory kept, files ignored)
+# ------------------------------------------------------------------------------
+logs/*.log
+
+# ------------------------------------------------------------------------------
+# Testing
+# ------------------------------------------------------------------------------
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+test-results/
+
+# ------------------------------------------------------------------------------
+# IDEs and editors
+# ------------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ------------------------------------------------------------------------------
+# Docker
+# ------------------------------------------------------------------------------
+.docker/
+
+# ------------------------------------------------------------------------------
+# Node / frontend tooling (if added later)
+# ------------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-error.log
+.npm
+
+# ------------------------------------------------------------------------------
+# Miscellaneous
+# ------------------------------------------------------------------------------
+*.bak
+*.tmp
+*.orig
+.hypothesis/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+.venv/
+venv/
+
+# Django
+db.sqlite3
+staticfiles/
+media/
+
+# Env
+.env
+.env.docker
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

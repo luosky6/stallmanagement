@@ -1,0 +1,33 @@
+# ==============================================================================
+# StallManagement — Development & Test Dependencies
+# ==============================================================================
+# Install alongside requirements.txt:
+#   pip install -r requirements.txt -r requirements-dev.txt
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Testing
+# ------------------------------------------------------------------------------
+pytest==7.4.4                   # Test runner
+pytest-django==4.7.0            # Django integration for pytest
+pytest-asyncio==0.21.1          # Async test support (WebSocket consumer tests)
+pytest-cov==4.1.0               # Coverage reporting
+
+# ------------------------------------------------------------------------------
+# Django Channels testing utilities
+# ------------------------------------------------------------------------------
+# channels[daphne] is already in requirements.txt
+# The channels.testing module ships with the channels package
+
+# ------------------------------------------------------------------------------
+# Code quality
+# ------------------------------------------------------------------------------
+flake8==6.1.0                   # Linting
+black==23.12.1                  # Code formatting
+isort==5.13.2                   # Import sorting
+
+# ------------------------------------------------------------------------------
+# API documentation (optional)
+# ------------------------------------------------------------------------------
+# drf-spectacular==0.27.0       # OpenAPI 3.0 schema generation
+# Uncomment to enable browsable API docs at /api/schema/swagger-ui/

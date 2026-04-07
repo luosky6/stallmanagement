@@ -1,0 +1,99 @@
+# ==============================================================================
+# StallManagement — Docker Compose Configuration
+# ==============================================================================
+# Services:
+#   web   — Daphne ASGI server (Django + Channels) on port 8000
+#   db    — MySQL 8.0 on port 3306
+#   redis — Redis 7 on port 6379 (required for Django Channels)
+#
+# Usage:
+#   docker-compose up --build          # first run
+#   docker-compose up                  # subsequent runs
+#   docker-compose down                # stop and remove containers
+#   docker-compose down -v             # stop, remove containers AND volumes
+#
+# After first start, load the database seed:
+#   docker-compose exec db mysql -u stalluser -pstallpass db_market < db_market.sql
+# ==============================================================================
+
+version: '3.9'
+
+services:
+
+  # ----------------------------------------------------------------------------
+  # web — Django / Daphne ASGI application server
+  # ----------------------------------------------------------------------------
+  web:
+    build: .
+    container_name: stallmanagement_web
+    command: >
+      sh -c "
+        echo 'Waiting for MySQL...' &&
+        python manage.py wait_for_db &&
+        python manage.py migrate --noinput &&
+        daphne -b 0.0.0.0 -p 8000 StallManagement.asgi:application
+      "
+    volumes:
+      - .:/app                          # mount source for live reload in dev
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker                     # Docker-specific env (DB_HOST=db, REDIS_URL=redis://redis:6379)
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # db — MySQL 8.0
+  # ----------------------------------------------------------------------------
+  db:
+    image: mysql:8.0
+    container_name: stallmanagement_db
+    environment:
+      MYSQL_DATABASE:      db_market
+      MYSQL_USER:          stalluser
+      MYSQL_PASSWORD:      stallpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - mysql_data:/var/lib/mysql       # persist data across container restarts
+      - ./db_market.sql:/docker-entrypoint-initdb.d/db_market.sql  # auto-import on first start
+    ports:
+      - "3306:3306"                     # expose for external MySQL clients (e.g. TablePlus)
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "stalluser", "-pstallpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ----------------------------------------------------------------------------
+  # redis — Redis 7 (channel layer for Django Channels WebSocket)
+  # ----------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: stallmanagement_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+# ------------------------------------------------------------------------------
+# Named volumes — persist data between docker-compose down / up cycles
+# ------------------------------------------------------------------------------
+volumes:
+  mysql_data:
+  redis_data:

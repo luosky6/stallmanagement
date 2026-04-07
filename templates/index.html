@@ -1,0 +1,4726 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MarketStall Inventory Manager - Capstone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f6fa;
+      color: #1a202c;
+    }
+
+    /* 鈹€鈹€ Header 鈹€鈹€ */
+    header {
+      padding: 14px 20px;
+      background: linear-gradient(90deg, #2b6cb0, #2c5282);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-main { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px; }
+    .header-title { font-size:22px; font-weight:700; letter-spacing:0.03em; }
+    .header-sub   { font-size:12px; opacity:0.9; }
+    .header-role  { font-size:12px; }
+    .header-role button {
+      margin-left:8px; font-size:11px; padding:4px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.7); background:rgba(15,23,42,0.1); color:#fff; cursor:pointer;
+    }
+
+    /* 鈹€鈹€ App shell 鈹€鈹€ */
+    #app { max-width:1200px; margin:0 auto; padding:16px 16px 40px; }
+
+    /* 鈹€鈹€ Login 鈹€鈹€ */
+    .login-wrapper {
+      max-width:430px; margin:40px auto; background:#fff; border-radius:14px;
+      padding:22px 22px 18px; box-shadow:0 10px 30px rgba(15,23,42,0.15); border:1px solid #e2e8f0;
+    }
+    .login-title    { font-size:20px; font-weight:700; margin-bottom:6px; text-align:center; color:#1a202c; }
+    .login-subtitle { font-size:12px; text-align:center; color:#4a5568; margin-bottom:14px; }
+    .login-row      { margin-bottom:12px; font-size:13px; color:#2d3748; }
+    .login-row label { display:block; margin-bottom:4px; color:#718096; }
+    .login-role, .login-row input {
+      width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e0;
+      background:#fff; color:#1a202c; outline:none; font-size:13px;
+    }
+    .login-role:focus, .login-row input:focus {
+      border-color:#2b6cb0; box-shadow:0 0 0 1px rgba(43,108,176,0.4);
+    }
+    .login-footer {
+      margin-top:10px; font-size:11px; color:#a0aec0;
+      display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;
+    }
+
+    /* 鈹€鈹€ Buttons 鈹€鈹€ */
+    .btn {
+      cursor:pointer; border-radius:999px; border:1px solid transparent;
+      padding:7px 14px; font-size:13px; display:inline-flex; align-items:center;
+      justify-content:center; gap:4px; white-space:nowrap;
+    }
+    .btn-primary  { background:linear-gradient(135deg,#2b6cb0,#2c5282); border-color:#2b6cb0; color:#fff; }
+    .btn-secondary{ background:#edf2f7; border-color:#cbd5e0; color:#2d3748; }
+    .btn-danger   { background:#e53e3e; border-color:#c53030; color:#fff; }
+    .btn-warning  { background:#ed8936; border-color:#c05621; color:#fff; }
+    .btn-outline  { background:transparent; border-color:#cbd5e0; color:#2d3748; }
+    .btn-sm       { padding:4px 10px; font-size:11px; }
+    .btn-success  { background:#38a169; border-color:#2f855a; color:#fff; }
+
+    /* 鈹€鈹€ Nav 鈹€鈹€ */
+    nav { margin:12px 0; display:flex; gap:6px; flex-wrap:wrap; }
+    nav button {
+      flex:1; min-width:110px; background:#e2e8f0; color:#2d3748;
+      border-radius:999px; border:1px solid #cbd5e0; padding:8px 10px; font-size:13px; cursor:pointer;
+    }
+    nav button.active { background:#2b6cb0; color:#fff; border-color:#2b6cb0; font-weight:600; }
+    nav button:hover  { border-color:#2b6cb0; }
+
+    /* 鈹€鈹€ Typography 鈹€鈹€ */
+    section { margin-top:4px; }
+    h2 { margin:4px 0 10px; font-size:18px; color:#2d3748; }
+    h3 { margin:14px 0 8px; font-size:15px; color:#2d3748; }
+    .section-desc { margin:0 0 12px; font-size:13px; color:#4a5568; }
+
+    /* 鈹€鈹€ Cards 鈹€鈹€ */
+    .card-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+    .card {
+      background:#fff; border-radius:10px; padding:12px 14px;
+      box-shadow:0 2px 6px rgba(15,23,42,0.1); border:1px solid #e2e8f0; flex:1; min-width:160px;
+    }
+    .card-title { font-size:12px; color:#718096; margin-bottom:4px; }
+    .card-value { font-size:22px; font-weight:700; color:#1a202c; }
+    .card-tag   { font-size:11px; color:#4c51bf; margin-top:4px; }
+
+    /* 鈹€鈹€ Tables 鈹€鈹€ */
+    .table-wrap { overflow-x:auto; margin-top:8px; }
+    table {
+      width:100%; border-collapse:collapse; background:#fff;
+      border-radius:10px; overflow:hidden; box-shadow:0 2px 6px rgba(15,23,42,0.1);
+    }
+    th, td { padding:8px 10px; font-size:12px; border-bottom:1px solid #e2e8f0; text-align:left; color:#2d3748; }
+    th { background:#edf2f7; font-weight:600; color:#4a5568; white-space:nowrap; }
+    tr:last-child td { border-bottom:none; }
+    tr.row-low td  { background:#fff5f5; color:#c53030; }
+    tr.total-row td { font-weight:700; background:#edf2f7 !important; color:#2d3748; }
+
+    /* 鈹€鈹€ Forms 鈹€鈹€ */
+    input, select, textarea {
+      padding:6px 8px; border-radius:6px; border:1px solid #cbd5e0;
+      background:#fff; color:#2d3748; font-size:12px; outline:none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color:#2b6cb0; box-shadow:0 0 0 1px rgba(43,108,176,0.3);
+    }
+    input:disabled, select:disabled { background:#f7fafc; color:#a0aec0; cursor:not-allowed; }
+
+    /* 鈹€鈹€ Search bar 鈹€鈹€ */
+    .search-bar {
+      display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end;
+      background:#fff; border-radius:10px; padding:10px 14px;
+      box-shadow:0 2px 6px rgba(15,23,42,0.1); border:1px solid #e2e8f0; margin-bottom:12px;
+    }
+    .search-bar .form-field { min-width:130px; }
+
+    /* 鈹€鈹€ Form grid (modal) 鈹€鈹€ */
+    .form-grid {
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px; margin-bottom:10px;
+    }
+    .form-field { display:flex; flex-direction:column; gap:3px; }
+    .form-field label { font-size:11px; color:#718096; font-weight:600; }
+    .form-field input,
+    .form-field select { width:100%; }
+
+    /* 鈹€鈹€ Tags 鈹€鈹€ */
+    .tag {
+      display:inline-flex; align-items:center; font-size:10px; border-radius:999px;
+      padding:2px 8px; border:1px solid #cbd5e0; color:#4a5568; background:#edf2f7;
+    }
+    .tag-warning { border-color:#ed8936; background:#fffaf0; color:#c05621; }
+    .tag-error   { border-color:#f56565; background:#fff5f5; color:#c53030; }
+    .tag-success { border-color:#48bb78; background:#f0fff4; color:#2f855a; }
+    .tag-info    { border-color:#4299e1; background:#ebf8ff; color:#2b6cb0; }
+
+    /* 鈹€鈹€ Category pills 鈹€鈹€ */
+    .filter-row { margin-bottom:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .filter-row .label { font-size:13px; color:#4a5568; }
+    .cat-btn {
+      font-size:12px; padding:4px 10px; border-radius:999px;
+      border:1px solid #cbd5e0; background:#edf2f7; color:#2d3748; cursor:pointer;
+    }
+    .cat-btn.activeCat { background:#2b6cb0; border-color:#2b6cb0; color:#fff; font-weight:600; }
+
+    /* 鈹€鈹€ Detail panel 鈹€鈹€ */
+    .detail-panel {
+      background:#f7fafc; border:1px solid #e2e8f0; border-radius:10px;
+      padding:16px; margin-top:14px; font-size:13px;
+    }
+    .detail-panel h3 { margin:0 0 10px; font-size:15px; color:#2b6cb0; }
+    .dl { display:grid; grid-template-columns:140px 1fr; gap:4px 12px; font-size:12px; }
+    .dl dt { color:#718096; font-weight:600; }
+    .dl dd { margin:0; color:#2d3748; }
+
+    /* 鈹€鈹€ Items editor (inside modal) 鈹€鈹€ */
+    .items-editor { margin-top:14px; }
+    .items-editor > .ie-header {
+      display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
+    }
+    .items-editor > .ie-header strong { font-size:13px; color:#2d3748; }
+    .items-editor table { box-shadow:none; border:1px solid #e2e8f0; }
+    .items-editor th, .items-editor td { padding:5px 8px; }
+
+    /* 鈹€鈹€ Chat 鈹€鈹€ */
+    #chatArea {
+      width:100%; background:#fff; border:1px solid #e2e8f0; height:240px; overflow-y:auto;
+      padding:10px; margin-bottom:10px; border-radius:10px; box-shadow:0 2px 6px rgba(15,23,42,0.1);
+    }
+    .chat-msg { background:#edf2f7; padding:7px 9px; margin-bottom:6px; border-radius:10px; max-width:65%; font-size:12px; }
+    .chat-msg.stall { background:#c6f6d5; color:#22543d; margin-left:auto; }
+    .chat-meta { font-size:10px; color:#718096; margin-bottom:2px; }
+
+    /* 鈹€鈹€ Favourites heart 鈹€鈹€ */
+    .heart { cursor:pointer; font-size:14px; margin-left:4px; color:#a0aec0; }
+    .heart.fav { color:#e53e3e; }
+
+    /* 鈹€鈹€ Mobile browse box 鈹€鈹€ */
+    .mobile-box {
+      border:1px solid #cbd5e0; padding:14px; background:#fff; width:360px;
+      margin:0 auto; border-radius:18px; box-shadow:0 4px 10px rgba(15,23,42,0.12);
+    }
+    .mobile-header { text-align:center; font-weight:600; margin-bottom:8px; font-size:14px; color:#2d3748; }
+
+    /* 鈹€鈹€ Modal overlay 鈹€鈹€ */
+    .modal-overlay {
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(15,23,42,0.45); display:flex; justify-content:center; align-items:flex-start;
+      z-index:50; padding-top:40px;
+    }
+    .modal-box {
+      background:#fff; padding:20px; width:700px; max-width:95vw; max-height:85vh; overflow-y:auto;
+      border-radius:14px; box-shadow:0 12px 40px rgba(15,23,42,0.3); border:1px solid #e2e8f0;
+    }
+    .modal-box h3 { margin:0 0 14px; font-size:16px; color:#2d3748; }
+    .modal-footer { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; padding-top:12px; border-top:1px solid #e2e8f0; }
+
+    /* 鈹€鈹€ Small modal 鈹€鈹€ */
+    .modal-box-sm {
+      background:#fff; padding:20px; width:480px; max-width:95vw; max-height:85vh; overflow-y:auto;
+      border-radius:14px; box-shadow:0 12px 40px rgba(15,23,42,0.3); border:1px solid #e2e8f0;
+    }
+    .modal-box-sm h3 { margin:0 0 14px; font-size:16px; color:#2d3748; }
+
+    /* 鈹€鈹€ Readonly hint 鈹€鈹€ */
+    .readonly-hint {
+      font-size:10px; color:#718096; margin-top:2px; display:flex; align-items:center; gap:3px;
+    }
+    .readonly-hint::before { content:'鈩癸笍'; font-size:11px; }
+
+    @media (max-width:768px) {
+      nav button { flex:1 1 45%; }
+      #app { padding:10px 10px 30px; }
+      .modal-box { width:98vw; padding:14px; }
+      .modal-box-sm { width:98vw; padding:14px; }
+      .form-grid { grid-template-columns:1fr 1fr; }
+    }
+  
+    /* Redesign Overrides Start */
+    :root {
+      --bg: #eef3f8;
+      --bg-deep: #e4ebf3;
+      --surface: rgba(255,255,255,0.94);
+      --surface-solid: #ffffff;
+      --surface-soft: #f7faff;
+      --surface-muted: #eef4fb;
+      --line: #d6e0ec;
+      --line-strong: #bfd0e2;
+      --text: #162132;
+      --text-soft: #3b4b61;
+      --muted: #6d7c92;
+      --brand: #0b5cab;
+      --brand-strong: #083d79;
+      --brand-soft: #e7f1ff;
+      --accent: #f97316;
+      --accent-soft: #fff1e7;
+      --success: #157347;
+      --success-soft: #e8f7ee;
+      --warning: #b45309;
+      --warning-soft: #fff4df;
+      --danger: #c0392b;
+      --danger-soft: #feece8;
+      --shadow-xs: 0 8px 20px rgba(15, 23, 42, 0.05);
+      --shadow-sm: 0 18px 40px rgba(15, 23, 42, 0.10);
+      --shadow-md: 0 30px 70px rgba(15, 23, 42, 0.14);
+      --shadow-lg: 0 40px 90px rgba(8, 61, 121, 0.16);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+    body {
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(11,92,171,0.14), transparent 24%),
+        radial-gradient(circle at 88% 0%, rgba(249,115,22,0.10), transparent 20%),
+        linear-gradient(180deg, #f9fbfe 0%, var(--bg) 52%, var(--bg-deep) 100%);
+    }
+    #app {
+      max-width: 1360px;
+      padding: 28px 24px 56px;
+    }
+    header {
+      padding: 0;
+      background: linear-gradient(135deg, rgba(10,23,40,0.95), rgba(10,46,82,0.90));
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 40px rgba(6, 19, 35, 0.22);
+    }
+    .header-main {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .header-title {
+      font-size: 26px;
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      color: #f8fbff;
+      margin-bottom: 3px;
+    }
+    .header-sub {
+      font-size: 13px;
+      color: rgba(232, 241, 253, 0.78);
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .header-role {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      min-height: 52px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #edf4ff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .header-role button {
+      margin-left: 0;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    .app-shell { display: flex; flex-direction: column; gap: 24px; }
+    .role-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10));
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .login-wrapper {
+      max-width: 1160px;
+      margin: 28px auto 0;
+      padding: 0;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(145deg, rgba(255,255,255,0.97), rgba(245,249,255,0.94));
+      border: 1px solid rgba(255,255,255,0.82);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .login-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+      align-items: stretch;
+    }
+    .login-hero {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 34px;
+      padding: 42px;
+      background:
+        radial-gradient(circle at top left, rgba(11,92,171,0.18), transparent 36%),
+        linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+      border-right: 1px solid rgba(191,208,226,0.75);
+    }
+    .login-hero::after {
+      content: '';
+      position: absolute;
+      inset: 24px auto 24px 24px;
+      width: 120px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(11,92,171,0.10), transparent);
+      filter: blur(16px);
+      pointer-events: none;
+    }
+    .login-title {
+      position: relative;
+      font-size: 40px;
+      line-height: 1.06;
+      letter-spacing: -0.045em;
+      text-align: left;
+      margin: 10px 0 12px;
+      color: var(--text);
+      font-weight: 800;
+      max-width: 640px;
+    }
+    .login-subtitle {
+      text-align: left;
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.72;
+      color: var(--text-soft);
+      max-width: 560px;
+    }
+    .login-highlights {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .login-form-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 42px 38px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,255,0.95));
+    }
+    .login-footer {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      line-height: 1.5;
+    }
+    .login-row {
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--text);
+    }
+    .mini-kicker, .control-label, .cart-meta-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #62758f;
+    }
+    .login-row label, .form-field label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6a7c95;
+    }
+    .login-role, .login-row input, input, select, textarea {
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line-strong);
+      background: rgba(255,255,255,0.98);
+      color: var(--text);
+      font-size: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+    }
+    input::placeholder, textarea::placeholder { color: #8a98ab; }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(11,92,171,0.58);
+      box-shadow: 0 0 0 4px rgba(11,92,171,0.10), 0 8px 18px rgba(11,92,171,0.08);
+    }
+    .btn {
+      min-height: 46px;
+      border-radius: 15px;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 14px 28px rgba(11,92,171,0.24);
+    }
+    .btn-primary:hover { box-shadow: 0 16px 32px rgba(11,92,171,0.30); }
+    .btn-secondary {
+      background: linear-gradient(180deg, #f6f9fd, #edf3fb);
+      border: 1px solid var(--line-strong);
+      color: #314257;
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-outline {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--line-strong);
+      color: var(--brand-strong);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #d94a3d, #b4281f);
+      color: #fff;
+    }
+    .btn-sm {
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .app-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 10px 6px 0;
+    }
+    .nav-label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #657890;
+      padding-left: 6px;
+    }
+    nav {
+      gap: 12px;
+      padding: 12px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(248,251,255,0.84));
+      border: 1px solid rgba(255,255,255,0.88);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+    }
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    nav button {
+      min-height: 48px;
+      min-width: 124px;
+      flex: 0 0 auto;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      background: transparent;
+      color: #44566f;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 0 16px;
+    }
+    nav button:hover {
+      background: rgba(11,92,171,0.06);
+      border-color: rgba(11,92,171,0.10);
+      color: var(--brand-strong);
+    }
+    nav button.active {
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(11,92,171,0.20);
+    }
+    .nav-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      margin-left: 8px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      color: inherit;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    section { margin-top: 6px; }
+    h2 {
+      font-size: 34px;
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      margin: 0 0 8px;
+      color: var(--text);
+      font-weight: 800;
+    }
+    h3 {
+      font-size: 19px;
+      line-height: 1.2;
+      color: var(--text);
+      margin: 0 0 8px;
+      font-weight: 750;
+    }
+    .section-desc {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-soft);
+      margin-bottom: 16px;
+    }
+    .card, .detail-panel, .search-bar, .modal-box, .modal-box-sm, .table-wrap {
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(255,255,255,0.86);
+    }
+    .card, .detail-panel, .search-bar, .modal-box, .modal-box-sm,
+    .page-hero, .catalog-panel, .product-card, .cart-summary, .cart-item, .cart-actions, .quick-add-card, .favorite-card, .chat-sidebar, .chat-window {
+      background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(248,251,255,0.93));
+      border: 1px solid rgba(255,255,255,0.88);
+      box-shadow: var(--shadow-sm);
+    }
+    .card {
+      padding: 20px 22px;
+      min-width: 180px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, rgba(11,92,171,0.75), rgba(249,115,22,0.55));
+      opacity: 0.75;
+    }
+    .card-row { gap: 18px; margin-bottom: 22px; }
+    .card-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #6f8198;
+      margin-bottom: 12px;
+    }
+    .card-value {
+      font-size: 32px;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: var(--text);
+    }
+    .card-tag {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .search-bar {
+      padding: 20px 22px;
+      gap: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245,249,255,0.94));
+    }
+    .search-bar .form-field { min-width: 150px; }
+    .table-wrap {
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(247,250,255,0.94));
+      overflow: auto;
+    }
+    table { box-shadow: none; background: transparent; }
+    th, td { padding: 15px 16px; font-size: 13px; }
+    th {
+      background: #f4f8fd;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #62738a;
+      font-weight: 800;
+    }
+    tbody tr:hover td { background: rgba(244, 248, 253, 0.92); }
+    .tag {
+      min-height: 28px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid transparent;
+    }
+    .tag-success { background: var(--success-soft); color: var(--success); border-color: rgba(21,115,71,0.12); }
+    .tag-warning { background: var(--warning-soft); color: var(--warning); border-color: rgba(180,83,9,0.12); }
+    .tag-error { background: var(--danger-soft); color: var(--danger); border-color: rgba(192,57,43,0.12); }
+    .tag-info { background: var(--brand-soft); color: var(--brand); border-color: rgba(11,92,171,0.10); }
+    .cat-btn {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(180deg, #ffffff, #f2f7fd);
+      color: #33455b;
+      box-shadow: var(--shadow-xs);
+    }
+    .cat-btn.activeCat {
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 22px rgba(11,92,171,0.20);
+    }
+    .modal-overlay {
+      background: rgba(7, 18, 34, 0.60);
+      backdrop-filter: blur(9px);
+    }
+    .modal-box, .modal-box-sm {
+      background: linear-gradient(180deg, rgba(255,255,255,0.99), rgba(248,251,255,0.97));
+    }
+    .customer-layout { display: flex; flex-direction: column; gap: 24px; }
+    .page-hero {
+      display: grid;
+      grid-template-columns: minmax(0,1.15fr) minmax(320px,0.85fr);
+      gap: 24px;
+      padding: 28px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(11,92,171,0.06), transparent 42%, rgba(249,115,22,0.05) 100%);
+      pointer-events: none;
+    }
+    .hero-copy, .hero-metrics { position: relative; z-index: 1; }
+    .hero-copy p {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.72;
+      color: var(--text-soft);
+      max-width: 700px;
+    }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+      align-content: start;
+    }
+    .hero-metric {
+      padding: 18px 18px 16px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(243,248,255,0.92));
+      border: 1px solid rgba(191,208,226,0.7);
+      box-shadow: var(--shadow-xs);
+    }
+    .hero-metric strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.05em;
+      color: var(--text);
+    }
+    .hero-metric span {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-soft);
+    }
+    .browse-grid {
+      display: grid;
+      grid-template-columns: 320px minmax(0,1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .catalog-panel {
+      position: sticky;
+      top: 106px;
+      padding: 24px;
+      box-shadow: 0 24px 50px rgba(15,23,42,0.11);
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+    .product-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 292px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 22px 44px rgba(15,23,42,0.09);
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--brand), rgba(249,115,22,0.75));
+    }
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 28px 58px rgba(15,23,42,0.12);
+    }
+    .product-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+    }
+    .product-card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+    .price-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .price-line strong {
+      font-size: 23px;
+      color: var(--brand-strong);
+      letter-spacing: -0.04em;
+    }
+    .stock-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: var(--success-soft);
+      color: var(--success);
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(21,115,71,0.10);
+    }
+    .stock-pill.out {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: rgba(192,57,43,0.10);
+    }
+    .product-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .product-description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-soft);
+      min-height: 70px;
+    }
+    .product-actions, .favorite-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .product-actions .btn:first-child, .favorite-actions .btn:first-child { flex: 1.2; }
+    .product-actions .btn:last-child, .favorite-actions .btn:last-child { flex: 0.8; }
+    .cart-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) 360px;
+      gap: 24px;
+      align-items: start;
+    }
+    .cart-stack { display: flex; flex-direction: column; gap: 18px; }
+    .quick-add-card {
+      display: grid;
+      grid-template-columns: minmax(0,1.45fr) 110px minmax(0,1fr) auto;
+      gap: 14px;
+      align-items: end;
+      padding: 22px;
+    }
+    .cart-item {
+      display: grid;
+      grid-template-columns: auto minmax(0,1fr) 136px 164px;
+      gap: 18px;
+      align-items: center;
+      padding: 22px;
+      box-shadow: 0 18px 36px rgba(15,23,42,0.08);
+    }
+    .cart-check {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      background: linear-gradient(180deg, #f8fbff, #edf4fd);
+      border: 1px solid var(--line-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cart-item-main {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .cart-item-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      font-size: 19px;
+      font-weight: 800;
+    }
+    .cart-item-title small {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .cart-note {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+    .cart-qty, .cart-price-block { display: flex; flex-direction: column; gap: 8px; }
+    .cart-price-block { align-items: flex-end; }
+    .cart-price {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+    .cart-actions, .cart-summary, .favorite-card, .chat-sidebar, .chat-window { padding: 24px; }
+    .cart-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,250,255,0.92));
+    }
+    .cart-summary {
+      position: sticky;
+      top: 106px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 26px 56px rgba(8,61,121,0.13);
+      border: 1px solid rgba(232,239,248,0.86);
+    }
+    .summary-divider {
+      height: 1px;
+      background: linear-gradient(90deg, rgba(191,208,226,0), rgba(191,208,226,1), rgba(191,208,226,0));
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+    .summary-row strong {
+      font-size: 18px;
+      color: var(--text);
+      font-weight: 800;
+    }
+    .summary-row.total {
+      margin-top: 4px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(11,92,171,0.08), rgba(249,115,22,0.05));
+      border: 1px solid rgba(191,208,226,0.72);
+    }
+    .summary-row.total strong {
+      font-size: 28px;
+      color: var(--brand-strong);
+    }
+    .empty-state {
+      padding: 40px 30px;
+      border-radius: 24px;
+      border: 1px dashed var(--line-strong);
+      background: linear-gradient(180deg, rgba(255,255,255,0.84), rgba(243,247,252,0.82));
+      text-align: center;
+      color: var(--text-soft);
+      line-height: 1.75;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    .favorites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px,1fr));
+      gap: 20px;
+    }
+    .favorite-card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 240px;
+      box-shadow: 0 22px 44px rgba(15,23,42,0.08);
+    }
+    .chat-shell {
+      display: grid;
+      grid-template-columns: 320px minmax(0,1fr);
+      gap: 24px;
+    }
+    .chat-sidebar, .chat-window { min-height: 580px; }
+    .conversation-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #f9fbff, #edf4fd);
+      border: 1px solid var(--line-strong);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .chat-window { display: flex; flex-direction: column; gap: 18px; }
+    .chat-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+    }
+    .chat-compose {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 12px;
+      align-items: end;
+      padding-top: 6px;
+    }
+    #chatArea {
+      min-height: 350px;
+      max-height: 460px;
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #f9fbff, #eef4fd);
+      border: 1px solid var(--line);
+      margin: 0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
+    }
+    .chat-msg {
+      padding: 14px 16px;
+      border-radius: 20px 20px 20px 8px;
+      background: #fff;
+      border: 1px solid #e5edf6;
+      box-shadow: 0 10px 20px rgba(15,23,42,0.06);
+      margin-bottom: 12px;
+      max-width: 72%;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .chat-msg.stall {
+      margin-left: auto;
+      border-radius: 20px 20px 8px 20px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 14px 28px rgba(11,92,171,0.18);
+    }
+    .chat-meta {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: #73839a;
+    }
+    .chat-msg.stall .chat-meta { color: rgba(255,255,255,0.72); }
+    .heart {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(180deg, #ffffff, #f5f9ff);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-xs);
+      color: #8a99ad;
+    }
+    .heart.fav {
+      background: linear-gradient(180deg, #fff6f8, #ffedf1);
+      border-color: #f2c8d1;
+      color: #d63863;
+    }
+    @media (max-width: 1180px) {
+      .page-hero, .browse-grid, .cart-layout, .chat-shell { grid-template-columns: 1fr; }
+      .catalog-panel, .cart-summary { position: static; }
+      .quick-add-card { grid-template-columns: 1fr 120px; }
+      .quick-add-card > :nth-child(3), .quick-add-card > :nth-child(4) { grid-column: span 2; }
+      .cart-item { grid-template-columns: auto minmax(0,1fr); }
+      .cart-price-block { align-items: flex-start; }
+    }
+    @media (max-width: 900px) {
+      #app { padding: 18px 12px 36px; }
+      .header-main { padding: 16px 12px; align-items: flex-start; }
+      .header-role { width: 100%; justify-content: space-between; }
+      .login-shell { grid-template-columns: 1fr; }
+      .login-hero, .login-form-card { padding: 28px 22px; }
+      .login-highlights, .hero-metrics, .favorites-grid, .catalog-grid { grid-template-columns: 1fr; }
+      .app-nav { align-items: stretch; }
+      .nav-actions { width: 100%; }
+      nav button { flex: 1 1 calc(50% - 10px); }
+    }
+    @media (max-width: 640px) {
+      h2 { font-size: 29px; }
+      .page-hero { padding: 22px; }
+      .quick-add-card { grid-template-columns: 1fr; }
+      .quick-add-card > :nth-child(3), .quick-add-card > :nth-child(4) { grid-column: auto; }
+      .chat-compose { grid-template-columns: 1fr; }
+      .product-actions, .favorite-actions, .cart-actions { flex-direction: column; }
+    }
+    /* Redesign Overrides End */
+  
+    /* Layout Proportion Refinements */
+    #app {
+      max-width: 1400px;
+      padding: 18px 20px 40px;
+    }
+    .header-main {
+      max-width: 1400px;
+      padding: 12px 20px;
+      gap: 16px;
+    }
+    .header-title {
+      font-size: 23px;
+      margin-bottom: 1px;
+    }
+    .header-sub {
+      font-size: 12px;
+      line-height: 1.45;
+      max-width: 640px;
+    }
+    .header-role {
+      min-height: 44px;
+      padding: 7px 10px;
+    }
+    .header-role button {
+      min-height: 34px;
+      padding: 0 12px;
+    }
+    .app-shell {
+      gap: 18px;
+    }
+    .app-nav {
+      gap: 14px;
+      padding-top: 2px;
+    }
+    nav {
+      padding: 9px;
+      border-radius: 20px;
+    }
+    .nav-actions {
+      gap: 8px;
+    }
+    nav button {
+      min-height: 42px;
+      min-width: 112px;
+      padding: 0 14px;
+      border-radius: 14px;
+      font-size: 13px;
+    }
+    .login-wrapper {
+      max-width: 1040px;
+      margin-top: 20px;
+      border-radius: 28px;
+    }
+    .login-shell {
+      grid-template-columns: minmax(0, 1.05fr) minmax(330px, 0.95fr);
+    }
+    .login-hero,
+    .login-form-card {
+      padding: 32px 30px;
+    }
+    .login-hero {
+      gap: 24px;
+    }
+    .login-title {
+      font-size: 34px;
+      max-width: 560px;
+      margin: 8px 0 10px;
+    }
+    .login-subtitle {
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 500px;
+    }
+    .login-highlights {
+      gap: 12px;
+    }
+    .login-highlights .hero-metric {
+      padding: 14px 14px 13px;
+    }
+    .page-hero {
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 18px;
+      padding: 22px 24px;
+      border-radius: 22px;
+    }
+    .hero-metrics {
+      gap: 10px;
+    }
+    .hero-metric {
+      padding: 14px 14px 13px;
+      border-radius: 16px;
+    }
+    .hero-metric strong {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+    .hero-metric span {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .browse-grid {
+      grid-template-columns: 260px minmax(0, 1fr);
+      gap: 18px;
+    }
+    .catalog-panel {
+      top: 84px;
+      padding: 18px;
+      border-radius: 20px;
+    }
+    .catalog-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .product-card {
+      min-height: 250px;
+      gap: 12px;
+      padding: 18px;
+      border-radius: 20px;
+    }
+    .product-card h3 {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .price-line strong {
+      font-size: 21px;
+    }
+    .product-description {
+      min-height: 56px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .product-actions,
+    .favorite-actions {
+      gap: 8px;
+    }
+    .card-row {
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .card {
+      min-width: 150px;
+      padding: 16px 16px 15px;
+      border-radius: 18px;
+    }
+    .card-title {
+      margin-bottom: 9px;
+    }
+    .card-value {
+      font-size: 28px;
+    }
+    .card-tag {
+      margin-top: 6px;
+      font-size: 12px;
+    }
+    .search-bar {
+      padding: 16px 18px;
+      gap: 12px;
+      border-radius: 18px;
+    }
+    th, td {
+      padding: 13px 14px;
+    }
+    .cart-layout {
+      grid-template-columns: minmax(0, 1.32fr) 320px;
+      gap: 18px;
+    }
+    .cart-stack {
+      gap: 14px;
+    }
+    .quick-add-card {
+      grid-template-columns: minmax(0, 1.5fr) 96px minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 20px;
+    }
+    .cart-item {
+      grid-template-columns: auto minmax(0, 1fr) 118px 144px;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 20px;
+    }
+    .cart-check {
+      width: 40px;
+      height: 40px;
+    }
+    .cart-item-title {
+      font-size: 17px;
+    }
+    .cart-price {
+      font-size: 21px;
+    }
+    .cart-summary,
+    .cart-actions,
+    .favorite-card,
+    .chat-sidebar,
+    .chat-window {
+      padding: 18px;
+      border-radius: 20px;
+    }
+    .cart-summary {
+      top: 84px;
+      gap: 14px;
+    }
+    .summary-row.total {
+      padding: 12px 14px;
+    }
+    .summary-row.total strong {
+      font-size: 25px;
+    }
+    .favorites-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .favorite-card {
+      min-height: 220px;
+      gap: 12px;
+    }
+    .chat-shell {
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 18px;
+    }
+    .chat-sidebar,
+    .chat-window {
+      min-height: 520px;
+    }
+    .conversation-card {
+      padding: 15px 16px;
+      border-radius: 16px;
+    }
+    #chatArea {
+      min-height: 320px;
+      max-height: 420px;
+      padding: 16px;
+      border-radius: 18px;
+    }
+    .chat-msg {
+      max-width: 68%;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+    }
+    @media (max-width: 1180px) {
+      #app {
+        padding: 16px 16px 34px;
+      }
+      .page-hero,
+      .browse-grid,
+      .cart-layout,
+      .chat-shell {
+        grid-template-columns: 1fr;
+      }
+      .catalog-panel,
+      .cart-summary {
+        position: static;
+      }
+    }
+    @media (max-width: 900px) {
+      .header-main {
+        padding: 12px 14px;
+      }
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+      .login-hero,
+      .login-form-card {
+        padding: 24px 20px;
+      }
+      .nav-actions {
+        width: 100%;
+      }
+      nav button {
+        flex: 1 1 calc(50% - 8px);
+      }
+    }
+  
+    /* Motion And Login Balance Refinements */
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      inset: auto;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(70px);
+      opacity: 0.55;
+    }
+    body::before {
+      width: 32vw;
+      height: 32vw;
+      left: -8vw;
+      top: 12vh;
+      background: radial-gradient(circle, rgba(11,92,171,0.18) 0%, rgba(11,92,171,0.08) 38%, transparent 72%);
+    }
+    body::after {
+      width: 30vw;
+      height: 30vw;
+      right: -10vw;
+      top: 18vh;
+      background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(249,115,22,0.05) 34%, transparent 72%);
+    }
+    #app,
+    .card,
+    .detail-panel,
+    .search-bar,
+    .table-wrap,
+    .page-hero,
+    .catalog-panel,
+    .product-card,
+    .cart-summary,
+    .cart-item,
+    .cart-actions,
+    .quick-add-card,
+    .favorite-card,
+    .chat-sidebar,
+    .chat-window,
+    .modal-box,
+    .modal-box-sm,
+    nav,
+    .btn,
+    input,
+    select,
+    textarea {
+      transition:
+        transform 180ms ease,
+        box-shadow 220ms ease,
+        border-color 180ms ease,
+        background-color 180ms ease,
+        opacity 180ms ease;
+    }
+    section {
+      animation: pageFade 260ms ease;
+      transform-origin: top center;
+    }
+    @keyframes pageFade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .login-wrapper {
+      max-width: 920px;
+      margin: 18px auto 0;
+      border-radius: 26px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.92), rgba(248,251,255,0.90)),
+        radial-gradient(circle at 18% 18%, rgba(11,92,171,0.08), transparent 30%),
+        radial-gradient(circle at 82% 80%, rgba(249,115,22,0.06), transparent 28%);
+      box-shadow:
+        0 28px 60px rgba(15,23,42,0.10),
+        0 0 0 1px rgba(255,255,255,0.72),
+        0 40px 90px rgba(11,92,171,0.08);
+      position: relative;
+    }
+    .login-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -30px -36px -40px;
+      background:
+        radial-gradient(circle at 35% 24%, rgba(11,92,171,0.10), transparent 30%),
+        radial-gradient(circle at 72% 72%, rgba(249,115,22,0.08), transparent 26%);
+      filter: blur(42px);
+      opacity: 0.9;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .login-shell {
+      grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+    }
+    .login-hero,
+    .login-form-card {
+      padding: 26px 26px;
+    }
+    .login-hero {
+      gap: 18px;
+      justify-content: center;
+      border-right: 1px solid rgba(191,208,226,0.55);
+      background:
+        radial-gradient(circle at top left, rgba(11,92,171,0.14), transparent 32%),
+        linear-gradient(180deg, rgba(248,251,255,0.94) 0%, rgba(239,245,255,0.88) 100%);
+    }
+    .login-hero::after {
+      inset: 16px auto 16px 16px;
+      width: 88px;
+      opacity: 0.55;
+      filter: blur(18px);
+    }
+    .login-title {
+      font-size: 28px;
+      line-height: 1.1;
+      max-width: 460px;
+      margin: 6px 0 8px;
+    }
+    .login-subtitle {
+      max-width: 440px;
+      font-size: 14px;
+      line-height: 1.58;
+    }
+    .login-highlights {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .login-highlights .hero-metric {
+      padding: 12px 12px 11px;
+      border-radius: 15px;
+    }
+    .login-highlights .hero-metric strong {
+      font-size: 17px;
+      margin-bottom: 5px;
+      letter-spacing: -0.03em;
+    }
+    .login-highlights .hero-metric span {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .login-form-card {
+      gap: 6px;
+      justify-content: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(250,252,255,0.92));
+    }
+    .login-row {
+      margin-bottom: 10px;
+    }
+    .login-row label {
+      margin-bottom: 6px;
+    }
+    .login-role,
+    .login-row input {
+      min-height: 42px;
+    }
+    .login-footer {
+      margin-top: 8px;
+      gap: 6px;
+      font-size: 11px;
+    }
+    @media (max-width: 1024px) {
+      .login-wrapper {
+        max-width: 860px;
+      }
+      .login-shell {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 0.92fr);
+      }
+    }
+    @media (max-width: 900px) {
+      body::before,
+      body::after,
+      .login-wrapper::before {
+        opacity: 0.45;
+      }
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+      .login-hero,
+      .login-form-card {
+        padding: 22px 20px;
+      }
+      .login-highlights {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    /* Adaptive Login Ratio Fixes */
+    .login-wrapper {
+      width: min(100%, 860px);
+      max-width: 860px;
+      margin: clamp(16px, 3vh, 28px) auto 0;
+    }
+    .login-shell {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+      align-items: stretch;
+    }
+    .login-hero {
+      padding: 24px 24px 20px;
+      min-width: 0;
+    }
+    .login-form-card {
+      padding: 22px 22px 18px;
+      min-width: 0;
+    }
+    .login-title {
+      font-size: clamp(26px, 2.2vw, 34px);
+      max-width: 420px;
+    }
+    .login-subtitle {
+      max-width: 400px;
+      font-size: 14px;
+    }
+    .login-highlights {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 460px;
+    }
+    .login-highlights .hero-metric {
+      min-height: 0;
+    }
+    .login-row {
+      margin-bottom: 8px;
+    }
+    .login-role,
+    .login-row input {
+      min-height: 40px;
+    }
+    .login-footer {
+      font-size: 10.5px;
+      line-height: 1.45;
+    }
+    body:has(.login-wrapper) #app {
+      max-width: 1320px;
+      padding-top: 12px;
+      padding-bottom: 24px;
+    }
+    body:has(.login-wrapper) .header-main {
+      max-width: 1320px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    @media (max-width: 1180px) {
+      .login-wrapper {
+        width: min(100%, 820px);
+      }
+      .login-shell {
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+      }
+    }
+    @media (max-width: 980px) {
+      .login-wrapper {
+        width: min(100%, 760px);
+      }
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+      .login-hero {
+        border-right: 0;
+        border-bottom: 1px solid rgba(191,208,226,0.55);
+        padding-bottom: 18px;
+      }
+      .login-form-card {
+        padding-top: 18px;
+      }
+      .login-highlights {
+        max-width: none;
+      }
+    }
+    @media (max-width: 720px) {
+      .login-wrapper {
+        width: min(100%, 620px);
+        border-radius: 22px;
+      }
+      .login-hero,
+      .login-form-card {
+        padding: 18px 16px;
+      }
+      .login-title {
+        font-size: 24px;
+        max-width: none;
+      }
+      .login-subtitle {
+        max-width: none;
+      }
+      .login-highlights {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-height: 860px) and (min-width: 981px) {
+      body:has(.login-wrapper) #app {
+        padding-top: 8px;
+        padding-bottom: 16px;
+      }
+      .login-wrapper {
+        margin-top: 12px;
+      }
+      .login-hero,
+      .login-form-card {
+        padding-top: 20px;
+        padding-bottom: 16px;
+      }
+      .login-title {
+        font-size: 26px;
+      }
+      .login-highlights .hero-metric {
+        padding: 10px 10px 9px;
+      }
+    }
+    @media (min-aspect-ratio: 19/10) and (min-width: 1200px) {
+      .login-wrapper {
+        width: min(100%, 900px);
+      }
+      .login-shell {
+        grid-template-columns: minmax(0, 1.05fr) 340px;
+      }
+    }
+    @media (max-aspect-ratio: 4/3) and (min-width: 981px) {
+      .login-wrapper {
+        width: min(100%, 780px);
+      }
+      .login-shell {
+        grid-template-columns: minmax(0, 1fr) 320px;
+      }
+      .login-title {
+        font-size: 27px;
+      }
+    }
+  
+    /* Login Space Compression */
+    body:has(.login-wrapper) #app {
+      max-width: 1520px;
+      padding: 10px 24px 18px;
+    }
+    body:has(.login-wrapper) .header-main {
+      max-width: 1520px;
+      width: min(100%, 1360px);
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .login-wrapper {
+      width: min(100%, 1080px);
+      max-width: 1080px;
+      min-height: clamp(440px, 52vh, 560px);
+      margin-top: 18px;
+      margin-bottom: 0;
+    }
+    .login-shell {
+      grid-template-columns: minmax(0, 1.18fr) minmax(320px, 380px);
+      min-height: inherit;
+    }
+    .login-hero,
+    .login-form-card {
+      min-height: inherit;
+    }
+    .login-hero {
+      padding: 26px 28px 22px;
+      justify-content: space-between;
+    }
+    .login-form-card {
+      padding: 24px 24px 20px;
+      justify-content: center;
+    }
+    .login-title {
+      max-width: 500px;
+    }
+    .login-highlights {
+      max-width: 520px;
+    }
+    @media (min-width: 1500px) {
+      .login-wrapper {
+        width: min(100%, 1140px);
+        max-width: 1140px;
+      }
+    }
+    @media (max-width: 980px) {
+      body:has(.login-wrapper) #app {
+        padding: 8px 16px 18px;
+      }
+      .login-wrapper {
+        width: min(100%, 820px);
+        min-height: 0;
+      }
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+      .login-hero,
+      .login-form-card {
+        min-height: 0;
+      }
+    }
+  
+    /* Global Background Smoothing And Login Fill */
+    html, body {
+      min-height: 100%;
+    }
+    body {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(11,92,171,0.16), transparent 24%),
+        radial-gradient(circle at 86% 22%, rgba(249,115,22,0.10), transparent 20%),
+        radial-gradient(circle at 50% 78%, rgba(11,92,171,0.08), transparent 28%),
+        linear-gradient(180deg, #f9fbfe 0%, #edf3fa 38%, #eaf1f8 68%, #e8eff7 100%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+    body::before,
+    body::after {
+      opacity: 0.38;
+      filter: blur(95px);
+    }
+    body::before {
+      width: 42vw;
+      height: 42vw;
+      left: -10vw;
+      top: 10vh;
+    }
+    body::after {
+      width: 38vw;
+      height: 38vw;
+      right: -12vw;
+      top: 16vh;
+    }
+    #app {
+      position: relative;
+      z-index: 0;
+    }
+    #app::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.00) 0%, rgba(255,255,255,0.12) 18%, rgba(255,255,255,0.00) 36%),
+        radial-gradient(circle at 50% 62%, rgba(255,255,255,0.26), transparent 34%);
+      filter: blur(28px);
+      opacity: 0.9;
+    }
+    body:has(.login-wrapper) #app {
+      min-height: calc(100vh - 76px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-bottom: 8px;
+    }
+    body:has(.login-wrapper) #app::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(1200px, 92vw);
+      height: 30vh;
+      background:
+        radial-gradient(ellipse at center, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.22) 34%, rgba(255,255,255,0.00) 72%);
+      filter: blur(28px);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .login-wrapper {
+      min-height: clamp(500px, 66vh, 700px);
+      margin-bottom: auto;
+      overflow: visible;
+    }
+    .login-wrapper::before {
+      inset: -36px -44px -54px;
+      filter: blur(54px);
+      opacity: 0.82;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(11,92,171,0.12), transparent 28%),
+        radial-gradient(circle at 74% 78%, rgba(249,115,22,0.09), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(255,255,255,0.40), transparent 48%);
+    }
+    @media (max-width: 980px) {
+      body:has(.login-wrapper) #app {
+        min-height: auto;
+      }
+      body:has(.login-wrapper) #app::after {
+        width: 94vw;
+        height: 18vh;
+        bottom: -2vh;
+      }
+      .login-wrapper {
+        min-height: 0;
+      }
+    }
+  
+    /* Login Hero Natural Flow */
+    .login-hero {
+      justify-content: flex-start;
+      gap: 14px;
+    }
+    .login-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 520px;
+    }
+    .login-story-card {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.58), rgba(247,250,255,0.42));
+      border: 1px solid rgba(191,208,226,0.55);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+    }
+    .login-story-item {
+      display: grid;
+      gap: 4px;
+    }
+    .login-story-item + .login-story-item {
+      padding-top: 10px;
+      border-top: 1px solid rgba(191,208,226,0.45);
+    }
+    .login-story-item strong {
+      font-size: 13px;
+      color: #22324a;
+      letter-spacing: -0.01em;
+    }
+    .login-story-item span {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #4b5d74;
+    }
+    .login-highlights {
+      margin-top: 2px;
+      align-self: stretch;
+    }
+    @media (max-width: 980px) {
+      .login-copy {
+        max-width: none;
+      }
+      .login-story-card {
+        margin-top: 6px;
+      }
+    }
+  
+    /* Rounded Edge Transition For Login Shell */
+    .login-wrapper {
+      border-radius: 30px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .login-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.88), transparent 18%),
+        radial-gradient(circle at top right, rgba(255,255,255,0.82), transparent 18%),
+        radial-gradient(circle at bottom left, rgba(255,255,255,0.74), transparent 18%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,0.70), transparent 18%);
+      opacity: 0.8;
+    }
+    .login-shell {
+      border-radius: inherit;
+      overflow: hidden;
+    }
+    .login-hero {
+      border-top-left-radius: 30px;
+      border-bottom-left-radius: 30px;
+      position: relative;
+    }
+    .login-form-card {
+      border-top-right-radius: 30px;
+      border-bottom-right-radius: 30px;
+      position: relative;
+    }
+    .login-hero::before,
+    .login-form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 26px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .login-hero::before {
+      right: -1px;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.52) 48%, rgba(255,255,255,0.88) 100%);
+    }
+    .login-form-card::before {
+      left: -1px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.52) 52%, rgba(255,255,255,0) 100%);
+    }
+    @media (max-width: 980px) {
+      .login-hero,
+      .login-form-card,
+      .login-wrapper {
+        border-radius: 24px;
+      }
+      .login-hero::before,
+      .login-form-card::before {
+        display: none;
+      }
+    }
+  
+    /* Login Corner Cleanup */
+    .login-wrapper,
+    .login-shell,
+    .login-hero,
+    .login-form-card {
+      border-radius: 28px;
+    }
+    .login-wrapper {
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.86);
+    }
+    .login-wrapper::after {
+      display: none;
+    }
+    .login-hero {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .login-form-card {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .login-hero::before,
+    .login-form-card::before {
+      display: none;
+    }
+    @media (max-width: 980px) {
+      .login-hero {
+        border-top-right-radius: 28px;
+        border-bottom-left-radius: 0;
+      }
+      .login-form-card {
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 28px;
+      }
+    }
+  
+    /* Login Ratio Rebalance */
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1480px);
+    }
+    .header-title {
+      max-width: 900px;
+    }
+    .header-sub {
+      max-width: 820px;
+    }
+    .login-wrapper {
+      width: min(100%, 1160px);
+      max-width: 1160px;
+      min-height: clamp(520px, 68vh, 720px);
+    }
+    .login-shell {
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 380px);
+    }
+    .login-hero {
+      padding: 26px 30px 24px;
+    }
+    .login-copy {
+      max-width: 620px;
+    }
+    .login-title {
+      max-width: 560px;
+      font-size: clamp(30px, 2.4vw, 40px);
+    }
+    .login-subtitle {
+      max-width: 520px;
+      font-size: 14.5px;
+    }
+    .login-story-card {
+      max-width: 560px;
+    }
+    .login-highlights {
+      max-width: 560px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .login-form-card {
+      padding: 24px 24px 20px;
+    }
+    @media (max-width: 1200px) {
+      .login-wrapper {
+        width: min(100%, 1060px);
+      }
+      .login-shell {
+        grid-template-columns: minmax(0, 1.2fr) minmax(300px, 360px);
+      }
+    }
+    @media (max-width: 980px) {
+      .login-wrapper {
+        width: min(100%, 840px);
+        min-height: 0;
+      }
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+      .login-copy,
+      .login-story-card,
+      .login-highlights,
+      .login-title,
+      .login-subtitle {
+        max-width: none;
+      }
+    }
+  
+    /* Header Bar Proportion Upgrade */
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1540px);
+      max-width: 1540px;
+      min-height: 70px;
+      padding: 16px 28px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 18px 40px rgba(6, 19, 35, 0.18);
+    }
+    body:has(.login-wrapper) header {
+      background: transparent;
+      box-shadow: none;
+      border-bottom: 0;
+    }
+    .header-main {
+      background: linear-gradient(135deg, rgba(16,37,63,0.96), rgba(25,59,99,0.92));
+    }
+    .header-title {
+      font-size: 24px;
+    }
+    .header-sub {
+      font-size: 13px;
+    }
+    @media (max-width: 980px) {
+      body:has(.login-wrapper) .header-main {
+        width: min(100%, 100%);
+        min-height: 58px;
+        padding: 12px 16px;
+        border-radius: 0 0 16px 16px;
+      }
+    }
+  
+    /* Login Focused Layout */
+    .login-shell {
+      grid-template-columns: minmax(0, 0.58fr) minmax(380px, 0.42fr);
+      gap: 28px;
+      align-items: center;
+      padding: 24px;
+    }
+    .login-wrapper {
+      width: min(100%, 1080px);
+      max-width: 1080px;
+      min-height: auto;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+    .login-hero {
+      border-radius: 0;
+      border: 0;
+      background: transparent;
+      padding: 8px 6px 8px 8px;
+      min-height: 0;
+      justify-content: center;
+      align-items: flex-start;
+      box-shadow: none;
+    }
+    .login-copy.compact-copy {
+      max-width: 420px;
+      gap: 12px;
+    }
+    .compact-copy .login-title {
+      font-size: clamp(28px, 2.4vw, 38px);
+      max-width: 420px;
+      margin: 0;
+      line-height: 1.12;
+    }
+    .compact-copy .login-subtitle {
+      max-width: 390px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #53657c;
+    }
+    .login-compact-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 2px;
+    }
+    .login-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(191,208,226,0.72);
+      color: #34506f;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 10px 20px rgba(15,23,42,0.05);
+      backdrop-filter: blur(8px);
+    }
+    .login-story-card,
+    .login-highlights {
+      display: none;
+    }
+    .login-form-card {
+      width: min(100%, 410px);
+      margin-left: auto;
+      padding: 28px 28px 22px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,251,255,0.96));
+      border: 1px solid rgba(255,255,255,0.92);
+      box-shadow: 0 24px 56px rgba(15,23,42,0.14);
+      justify-content: center;
+      position: relative;
+    }
+    .login-form-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.88);
+    }
+    .login-row {
+      margin-bottom: 10px;
+    }
+    .login-footer {
+      margin-top: 10px;
+    }
+    @media (max-width: 980px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 16px;
+      }
+      .login-copy.compact-copy,
+      .compact-copy .login-title,
+      .compact-copy .login-subtitle {
+        max-width: none;
+      }
+      .login-form-card {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  
+    /* Full Width Login Stage */
+    body:has(.login-wrapper) #app {
+      max-width: 1540px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1540px);
+      max-width: 1540px;
+    }
+    .login-wrapper {
+      width: min(100%, 1540px);
+      max-width: 1540px;
+      margin-left: auto;
+      margin-right: auto;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      isolation: auto;
+      overflow: visible;
+    }
+    .login-wrapper::before,
+    .login-wrapper::after {
+      display: none;
+    }
+    .login-shell {
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr) 420px;
+      gap: 42px;
+      padding: 18px 6px 6px;
+      border-radius: 0;
+      overflow: visible;
+      background: transparent;
+    }
+    .login-hero,
+    .login-form-card {
+      border-radius: 0;
+    }
+    .login-hero {
+      background: transparent;
+      padding: 22px 8px 18px 12px;
+      box-shadow: none;
+      border: 0;
+    }
+    .login-form-card {
+      width: min(100%, 420px);
+      margin-left: auto;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(255,255,255,0.92);
+      box-shadow: 0 18px 44px rgba(15,23,42,0.12);
+    }
+    @media (max-width: 980px) {
+      .login-wrapper {
+        width: min(100%, 100%);
+      }
+      .login-shell {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 12px 0 0;
+      }
+      .login-hero {
+        padding: 12px 4px 6px;
+      }
+      .login-form-card {
+        width: 100%;
+      }
+    }
+  
+    /* Login Panel Scale Up */
+    .login-shell {
+      grid-template-columns: minmax(0, 1fr) 460px;
+      gap: 56px;
+      align-items: center;
+    }
+    .login-hero {
+      padding: 34px 18px 28px 20px;
+    }
+    .login-copy.compact-copy {
+      max-width: 540px;
+      gap: 14px;
+    }
+    .compact-copy .login-title {
+      max-width: 540px;
+      font-size: clamp(36px, 2.8vw, 48px);
+      line-height: 1.08;
+    }
+    .compact-copy .login-subtitle {
+      max-width: 500px;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .login-compact-pills {
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .login-pill {
+      min-height: 38px;
+      padding: 0 16px;
+      font-size: 13px;
+      border-radius: 999px;
+    }
+    .login-form-card {
+      width: min(100%, 460px);
+      padding: 34px 32px 28px;
+      border-radius: 30px;
+      box-shadow: 0 24px 54px rgba(15,23,42,0.14);
+    }
+    .login-form-card::after {
+      border-radius: inherit;
+    }
+    .login-row {
+      margin-bottom: 12px;
+    }
+    .login-role,
+    .login-row input {
+      min-height: 44px;
+      font-size: 15px;
+    }
+    .login-footer {
+      margin-top: 12px;
+      font-size: 11px;
+    }
+    @media (max-width: 1200px) {
+      .login-shell {
+        grid-template-columns: minmax(0, 1fr) 420px;
+        gap: 40px;
+      }
+      .compact-copy .login-title {
+        font-size: clamp(32px, 2.7vw, 42px);
+      }
+      .login-form-card {
+        width: min(100%, 420px);
+      }
+    }
+    @media (max-width: 980px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .login-hero {
+        padding: 20px 6px 8px;
+      }
+      .login-copy.compact-copy,
+      .compact-copy .login-title,
+      .compact-copy .login-subtitle {
+        max-width: none;
+      }
+      .login-form-card {
+        width: 100%;
+        border-radius: 26px;
+        padding: 26px 22px 22px;
+      }
+    }
+  
+    /* Figma-Style Login Frame Rebalance */
+    body:has(.login-wrapper) #app {
+      align-items: center;
+    }
+    .login-wrapper {
+      width: min(100%, 1380px);
+      max-width: 1380px;
+    }
+    .login-shell {
+      grid-template-columns: minmax(520px, 680px) minmax(440px, 500px);
+      justify-content: center;
+      column-gap: 68px;
+      row-gap: 20px;
+      padding: 28px 52px 12px;
+      align-items: center;
+    }
+    .login-hero {
+      justify-self: end;
+      width: 100%;
+      max-width: 680px;
+      padding: 34px 10px 28px 10px;
+    }
+    .login-copy.compact-copy {
+      max-width: 620px;
+      gap: 16px;
+    }
+    .compact-copy .login-title {
+      max-width: 620px;
+      font-size: clamp(40px, 3.1vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+    .compact-copy .login-subtitle {
+      max-width: 560px;
+      font-size: 18px;
+      line-height: 1.72;
+    }
+    .login-compact-pills {
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .login-pill {
+      min-height: 42px;
+      padding: 0 18px;
+      font-size: 14px;
+      border-radius: 999px;
+    }
+    .login-form-card {
+      justify-self: start;
+      width: min(100%, 500px);
+      max-width: 500px;
+      padding: 38px 36px 32px;
+      border-radius: 32px;
+      box-shadow: 0 28px 60px rgba(15,23,42,0.15);
+    }
+    .login-row {
+      margin-bottom: 14px;
+    }
+    .login-role,
+    .login-row input {
+      min-height: 48px;
+      font-size: 16px;
+      border-radius: 16px;
+    }
+    .login-form-card .btn-primary {
+      min-height: 52px;
+      font-size: 16px;
+      border-radius: 18px;
+      margin-top: 10px;
+    }
+    .login-footer {
+      margin-top: 14px;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    @media (max-width: 1280px) {
+      .login-shell {
+        grid-template-columns: minmax(460px, 1fr) minmax(400px, 460px);
+        column-gap: 44px;
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+      .compact-copy .login-title {
+        font-size: clamp(34px, 3vw, 48px);
+      }
+      .compact-copy .login-subtitle {
+        font-size: 16px;
+      }
+      .login-form-card {
+        width: min(100%, 460px);
+        padding: 32px 28px 26px;
+      }
+    }
+    @media (max-width: 980px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+        justify-content: stretch;
+        padding: 18px 12px 6px;
+        row-gap: 26px;
+      }
+      .login-hero,
+      .login-form-card {
+        justify-self: stretch;
+        width: 100%;
+        max-width: none;
+      }
+      .login-hero {
+        padding: 10px 6px 0;
+      }
+      .compact-copy .login-title,
+      .compact-copy .login-subtitle,
+      .login-copy.compact-copy {
+        max-width: none;
+      }
+      .compact-copy .login-title {
+        font-size: clamp(30px, 8vw, 42px);
+      }
+      .compact-copy .login-subtitle {
+        font-size: 15px;
+      }
+      .login-form-card {
+        border-radius: 28px;
+      }
+    }
+  
+    /* Header Width Alignment */
+    body:has(.login-wrapper) #app {
+      max-width: 1660px;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1600px);
+      max-width: 1600px;
+      min-height: 76px;
+      padding: 16px 34px;
+      border-radius: 0 0 22px 22px;
+    }
+    .login-wrapper {
+      width: min(100%, 1440px);
+      max-width: 1440px;
+    }
+    @media (max-width: 1280px) {
+      body:has(.login-wrapper) .header-main {
+        width: min(100%, 100%);
+        padding: 14px 22px;
+      }
+      .login-wrapper {
+        width: min(100%, 1240px);
+      }
+    }
+  
+    /* Header And Login Exact Width Match */
+    body:has(.login-wrapper) .header-main,
+    body:has(.login-wrapper) .login-wrapper {
+      width: min(100%, 1440px);
+      max-width: 1440px;
+    }
+    @media (max-width: 1280px) {
+      body:has(.login-wrapper) .header-main,
+      body:has(.login-wrapper) .login-wrapper {
+        width: min(100%, 1240px);
+        max-width: 1240px;
+      }
+    }
+  
+    /* Login Header Container Fix */
+    body:has(.login-wrapper) header {
+      align-self: stretch;
+      width: 100%;
+      display: block;
+      padding: 0 24px;
+      box-sizing: border-box;
+    }
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1440px);
+      max-width: 1440px;
+      margin: 0 auto;
+      min-height: 76px;
+    }
+  
+    /* Global Rounded Header Bar */
+    header {
+      padding-left: 24px;
+      padding-right: 24px;
+      box-sizing: border-box;
+    }
+    .header-main {
+      border-radius: 22px;
+      overflow: hidden;
+    }
+    @media (max-width: 980px) {
+      header {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .header-main {
+        border-radius: 18px;
+      }
+    }
+  
+    /* Final Header Card Override */
+    header {
+      background: transparent !important;
+      box-shadow: none !important;
+      border-bottom: 0 !important;
+      padding: 12px 24px 0 !important;
+    }
+    .header-main {
+      width: min(100%, 1440px) !important;
+      max-width: 1440px !important;
+      margin: 0 auto !important;
+      padding: 16px 20px !important;
+      border-radius: 24px !important;
+      background: linear-gradient(135deg, rgba(16,37,63,0.98), rgba(25,59,99,0.94)) !important;
+      box-shadow: 0 18px 40px rgba(6, 19, 35, 0.18) !important;
+      overflow: hidden !important;
+    }
+    @media (max-width: 980px) {
+      header {
+        padding: 10px 12px 0 !important;
+      }
+      .header-main {
+        border-radius: 18px !important;
+        padding: 14px 16px !important;
+      }
+    }
+  
+    /* Header Width Follow Content */
+    header {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .header-main {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      box-sizing: border-box !important;
+    }
+  
+    /* Login Header Matches Login Stage */
+    body:has(.login-wrapper) header {
+      padding-left: 24px !important;
+      padding-right: 24px !important;
+    }
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1440px) !important;
+      max-width: 1440px !important;
+      margin: 0 auto !important;
+    }
+    @media (max-width: 980px) {
+      body:has(.login-wrapper) header {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+      body:has(.login-wrapper) .header-main {
+        width: 100% !important;
+        max-width: none !important;
+      }
+    }
+  
+    /* Login Header Exact Edge Alignment */
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1420px) !important;
+      max-width: 1420px !important;
+    }
+  
+    /* Login Header Further Width Reduction */
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1320px) !important;
+      max-width: 1320px !important;
+    }
+  
+    /* Login Header Edge Lock */
+    body:has(.login-wrapper) .header-main {
+      width: min(100%, 1240px) !important;
+      max-width: 1240px !important;
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="header-main">
+      <div>
+        <div class="header-title">MarketStall Inventory Manager</div>
+        <div class="header-sub">Customer-first inventory workspace for smarter market operations</div>
+      </div>
+      <div v-if="loggedIn" class="header-role">
+        <span class="role-chip">{{ currentRoleLabel }}</span>
+        <span v-if="currentUserName">{{ currentUserName }}</span>
+        <button class="btn btn-outline btn-sm" @click="logout">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div v-if="!loggedIn" class="login-wrapper login-shell">
+    <div class="login-hero">
+      <div class="login-copy compact-copy">
+        <div class="mini-kicker">MarketStall Platform</div>
+        <div class="login-title">Sign in to the market workspace.</div>
+        <div class="login-subtitle">Manage inventory, review activity, and move straight into the workflow without leaving this screen.</div>
+        <div class="login-compact-pills">
+          <span class="login-pill">Inventory</span>
+          <span class="login-pill">Orders</span>
+          <span class="login-pill">Customer Flow</span>
+        </div>
+      </div>
+    </div>
+    <div class="login-form-card">
+      <div class="login-row">
+        <label>Role</label>
+        <select v-model="loginForm.role" class="login-role">
+          <option value="admin">Administrator</option>
+          <option value="stall_owner">Stall Owner</option>
+          <option value="customer">Customer</option>
+        </select>
+      </div>
+      <div class="login-row">
+        <label>Username</label>
+        <input v-model="loginForm.username" type="text" placeholder="e.g. admin / owner1 / customer1">
+      </div>
+      <div class="login-row">
+        <label>Password</label>
+        <input v-model="loginForm.password" type="password" placeholder="Demo only - any password works">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;" @click="doLogin">Enter workspace</button>
+      <div class="login-footer">
+        <span>Demo environment with role-based sample views.</span>
+        <span>Switch roles anytime to inspect different product flows.</span>
+      </div>
+    </div>
+  </div>
+
+  <div v-else class="app-shell">
+
+    <nav class="app-nav">
+      <div class="nav-label">{{ currentRoleLabel }} Workspace</div>
+      <div class="nav-actions">
+        <template v-if="currentRole === 'admin'">
+          <button :class="{active: page==='adminOverview'}" @click="page='adminOverview'">Overview</button>
+          <button :class="{active: page==='inventory'}" @click="page='inventory'">Products</button>
+          <button :class="{active: page==='categories'}" @click="page='categories'">Categories</button>
+          <button :class="{active: page==='inorders'}" @click="page='inorders'">Inbound</button>
+          <button :class="{active: page==='outorders'}" @click="page='outorders'">Outbound</button>
+          <button :class="{active: page==='customers'}" @click="page='customers'">Customers</button>
+          <button :class="{active: page==='stalls'}" @click="page='stalls'">Stalls</button>
+        </template>
+        <template v-else-if="currentRole === 'stall_owner'">
+          <button :class="{active: page==='stallOverview'}" @click="page='stallOverview'">Overview</button>
+          <button :class="{active: page==='inventory'}" @click="page='inventory'">Products</button>
+          <button :class="{active: page==='inorders'}" @click="page='inorders'">Inbound Orders</button>
+          <button :class="{active: page==='outorders'}" @click="page='outorders'">Outbound Orders</button>
+          <button :class="{active: page==='chat'}" @click="page='chat'">Chat</button>
+        </template>
+        <template v-else-if="currentRole === 'customer'">
+          <button :class="{active: page==='mobile'}" @click="page='mobile'">Browse</button>
+          <button :class="{active: page==='buyList'}" @click="page='buyList'">My List <span class="nav-count">{{ buyList.length }}</span></button>
+          <button :class="{active: page==='fav'}" @click="page='fav'">Favourites</button>
+          <button :class="{active: page==='chat'}" @click="page='chat'">Chat</button>
+        </template>
+      </div>
+    </nav>
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         ADMIN OVERVIEW
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='adminOverview' && currentRole==='admin'">
+      <h2>Administrator Overview</h2>
+      <p class="section-desc">High-level view of stalls, products, and order activity across the market.</p>
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Stalls</div>
+          <div class="card-value">{{ stallInfo.length }}</div>
+          <div class="card-tag">Active: {{ activeStallCount }} | Inactive: {{ stallInfo.length - activeStallCount }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Products</div>
+          <div class="card-value">{{ inventory.length }}</div>
+          <div class="card-tag">Out of stock: {{ lowStockGlobal }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Inbound Orders</div>
+          <div class="card-value">{{ inorders.length }}</div>
+          <div class="card-tag">Completed: {{ inorders.filter(o=>o.status==='completed').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Outbound Orders</div>
+          <div class="card-value">{{ outorders.length }}</div>
+          <div class="card-tag">Completed: {{ outorders.filter(o=>o.status==='completed').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Stock Units</div>
+          <div class="card-value">{{ inventory.reduce((s,i)=>s+i.stock,0) }}</div>
+          <div class="card-tag">Across all products</div>
+        </div>
+      </div>
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Customers</div>
+          <div class="card-value">{{ dbCustomers.length }}</div>
+          <div class="card-tag">Suppliers: {{ dbCustomers.filter(c=>c.customer_type==='supplier').length }} | Buyers: {{ dbCustomers.filter(c=>c.customer_type==='buyer').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Categories</div>
+          <div class="card-value">{{ dbCategories.length }}</div>
+          <div class="card-tag">Product classification groups</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">System Highlights</div>
+        <ul style="margin:6px 0 0;padding-left:18px;font-size:12px;color:#4a5568;line-height:1.6;">
+          <li>Full CRUD on products: add, search (by ID/name/SN), edit, and delete (with order-record guard).</li>
+          <li>Stock is read-only during product editing - updated exclusively through inbound/outbound orders.</li>
+          <li>Inbound orders from suppliers automatically increase product stock on creation/edit; decrease on deletion.</li>
+          <li>Outbound orders to buyers decrease stock (insufficient-stock check enforced); deletion restores stock.</li>
+          <li>Category management: add, edit, and delete categories (with product-reference guard).</li>
+          <li>Customer management: full CRUD for suppliers and buyers (with order-reference guard on delete).</li>
+          <li>Stall management: add, edit, activate/deactivate stalls with owner assignment.</li>
+          <li>Customers can browse products, manage favourites, and chat with stall owners.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         PRODUCT MANAGEMENT
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='inventory' && (currentRole==='admin' || currentRole==='stall_owner')">
+      <h2>{{ currentRole==='admin' ? 'Product Management' : 'Products' }}</h2>
+      <p class="section-desc">
+        Add, search, edit, and delete products. Stock is automatically updated by inbound and outbound orders.
+      </p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Showing / Total</div>
+          <div class="card-value">{{ filteredInventory.length }} / {{ inventory.length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Out of Stock</div>
+          <div class="card-value" :style="{color: lowStockCountFiltered>0?'#e53e3e':'#38a169'}">{{ lowStockCountFiltered }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Units in Stock</div>
+          <div class="card-value">{{ totalStockFiltered }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Inventory Value</div>
+          <div class="card-value">${{ filteredInventory.reduce((s,i)=>s+i.price*i.stock,0).toFixed(2) }}</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="form-field">
+          <label>Search (ID / Name / SN)</label>
+          <input v-model="invSearch" placeholder="e.g. 5, T-Shirt, CLT-001">
+        </div>
+        <div class="form-field">
+          <label>Category</label>
+          <select v-model="selectedCategory">
+            <option value="All">All Categories</option>
+            <option v-for="cat in dbCategories" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
+          </select>
+        </div>
+        <button class="btn btn-outline" @click="invSearch=''; selectedCategory='All'">Reset</button>
+        <button v-if="currentRole==='admin'" class="btn btn-primary" style="margin-left:auto;" @click="openAddProduct">
+          + Add Product
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>SN</th><th>Name</th><th>Category</th>
+              <th>Price ($)</th><th>Stock</th><th>Description</th><th>Status</th>
+              <th v-if="currentRole==='admin'">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredInventory.length===0">
+              <td :colspan="currentRole==='admin'?9:8" style="text-align:center;color:#718096;padding:20px;">
+                No products match your search criteria.
+              </td>
+            </tr>
+            <tr v-for="item in filteredInventory" :key="item.id" :class="{'row-low': item.stock===0}">
+              <td>{{ item.id }}</td>
+              <td><code style="font-size:11px;">{{ item.sn }}</code></td>
+              <td><strong>{{ item.name }}</strong></td>
+              <td>{{ getCategoryName(item.category_id) }}</td>
+              <td>${{ item.price.toFixed(2) }}</td>
+              <td>
+                <strong :style="{color: item.stock===0?'#e53e3e': item.stock<10?'#dd6b20':'#38a169'}">
+                  {{ item.stock }}
+                </strong>
+              </td>
+              <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                {{ item.description || '-' }}
+              </td>
+              <td>
+                <span v-if="item.stock===0" class="tag tag-error">Out of stock</span>
+                <span v-else-if="item.stock<10" class="tag tag-warning">Low stock</span>
+                <span v-else class="tag tag-success">In stock</span>
+              </td>
+              <td v-if="currentRole==='admin'" style="white-space:nowrap;">
+                <button class="btn btn-secondary btn-sm" @click="openEditProduct(item)">Edit</button>
+                <button class="btn btn-danger btn-sm" style="margin-left:4px;" @click="deleteProduct(item)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         CATEGORY MANAGEMENT  (admin)
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='categories' && currentRole==='admin'">
+      <h2>Category Management</h2>
+      <p class="section-desc">
+        Add, edit, and delete product categories. Categories referenced by existing products cannot be deleted.
+      </p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Categories</div>
+          <div class="card-value">{{ dbCategories.length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">In Use</div>
+          <div class="card-value">{{ categoriesInUseCount }}</div>
+          <div class="card-tag">Referenced by products</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="form-field">
+          <label>Search Category</label>
+          <input v-model="catSearch" placeholder="Category name...">
+        </div>
+        <button class="btn btn-outline" @click="catSearch=''">Reset</button>
+        <button class="btn btn-primary" style="margin-left:auto;" @click="openAddCategory">+ Add Category</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Description</th><th>Products</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredCategories.length===0">
+              <td colspan="5" style="text-align:center;color:#718096;padding:20px;">No categories found.</td>
+            </tr>
+            <tr v-for="cat in filteredCategories" :key="cat.id">
+              <td>{{ cat.id }}</td>
+              <td><strong>{{ cat.name }}</strong></td>
+              <td>{{ cat.description || '-' }}</td>
+              <td>
+                <span class="tag" :class="{'tag-info': productCountByCategory(cat.id)>0}">
+                  {{ productCountByCategory(cat.id) }} product(s)
+                </span>
+              </td>
+              <td style="white-space:nowrap;">
+                <button class="btn btn-secondary btn-sm" @click="openEditCategory(cat)">Edit</button>
+                <button class="btn btn-danger btn-sm" style="margin-left:4px;" @click="deleteCategory(cat)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         INBOUND ORDER MANAGEMENT
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='inorders' && (currentRole==='admin' || currentRole==='stall_owner')">
+      <h2>Inbound Order Management</h2>
+      <p class="section-desc">
+        Manage inbound orders from suppliers. Creating or editing an order updates stock automatically; deleting an order reverses those stock additions.
+      </p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Orders</div>
+          <div class="card-value">{{ inorders.length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Draft</div>
+          <div class="card-value">{{ inorders.filter(o=>o.status==='draft').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Completed</div>
+          <div class="card-value">{{ inorders.filter(o=>o.status==='completed').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Cancelled</div>
+          <div class="card-value">{{ inorders.filter(o=>o.status==='cancelled').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Inbound Value</div>
+          <div class="card-value">${{ inordersTotalValue.toFixed(2) }}</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="form-field">
+          <label>Code / ID</label>
+          <input v-model="inSearch" placeholder="IN2024112701 or 1">
+        </div>
+        <div class="form-field">
+          <label>Supplier</label>
+          <input v-model="inSearchSupplier" placeholder="Supplier name">
+        </div>
+        <div class="form-field">
+          <label>Operator</label>
+          <input v-model="inSearchOperator" placeholder="Operator name">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="inSearchStatus">
+            <option value="">All</option>
+            <option value="draft">Draft</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button class="btn btn-outline"
+          @click="inSearch='';inSearchSupplier='';inSearchOperator='';inSearchStatus=''">Reset</button>
+        <button class="btn btn-primary" style="margin-left:auto;" @click="openAddInorder">
+          + New Inbound Order
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Order Code</th><th>Supplier</th><th>Operator</th>
+              <th>Status</th><th>Total Qty</th><th>Total Amount</th><th>Remark</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredInorders.length===0">
+              <td colspan="9" style="text-align:center;color:#718096;padding:20px;">No inbound orders found.</td>
+            </tr>
+            <tr v-for="o in filteredInorders" :key="o.id">
+              <td>{{ o.id }}</td>
+              <td><code style="font-size:11px;">{{ o.code }}</code></td>
+              <td>{{ o.supplier }}</td>
+              <td>{{ o.operator }}</td>
+              <td>
+                <span v-if="o.status==='completed'" class="tag tag-success">Completed</span>
+                <span v-else-if="o.status==='cancelled'" class="tag tag-error">Cancelled</span>
+                <span v-else class="tag tag-warning">Draft</span>
+              </td>
+              <td>{{ o.products.reduce((s,p)=>s+p.amount,0) }}</td>
+              <td>${{ o.products.reduce((s,p)=>s+p.amount*p.unit_price,0).toFixed(2) }}</td>
+              <td>{{ o.remark || '-' }}</td>
+              <td style="white-space:nowrap;">
+                <button class="btn btn-secondary btn-sm" @click="viewOrder('in',o)">Detail</button>
+                <button class="btn btn-warning btn-sm"   style="margin-left:4px;" @click="openEditInorder(o)">Edit</button>
+                <button class="btn btn-danger btn-sm"    style="margin-left:4px;" @click="deleteInorder(o)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-if="detailOrder && detailOrderType==='in'" class="detail-panel">
+        <h3>Inbound Order Detail - {{ detailOrder.code }}</h3>
+        <dl class="dl">
+          <dt>Order ID</dt>   <dd>{{ detailOrder.id }}</dd>
+          <dt>Order Code</dt> <dd>{{ detailOrder.code }}</dd>
+          <dt>Supplier</dt>   <dd>{{ detailOrder.supplier }}</dd>
+          <dt>Operator</dt>   <dd>{{ detailOrder.operator }}</dd>
+          <dt>Status</dt>
+          <dd>
+            <span v-if="detailOrder.status==='completed'" class="tag tag-success">Completed</span>
+            <span v-else-if="detailOrder.status==='cancelled'" class="tag tag-error">Cancelled</span>
+            <span v-else class="tag tag-warning">Draft</span>
+          </dd>
+          <dt>Remark</dt> <dd>{{ detailOrder.remark || '-' }}</dd>
+        </dl>
+        <h3 style="margin-top:14px;">Order Items</h3>
+        <div class="table-wrap">
+          <table style="box-shadow:none;border:1px solid #e2e8f0;">
+            <thead>
+              <tr><th>#</th><th>Product</th><th>Qty</th><th>Unit Price ($)</th><th>Line Total ($)</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="(line,i) in detailOrder.products" :key="i">
+                <td>{{ i+1 }}</td>
+                <td>{{ line.name }}</td>
+                <td>{{ line.amount }}</td>
+                <td>{{ line.unit_price.toFixed(2) }}</td>
+                <td>{{ (line.amount*line.unit_price).toFixed(2) }}</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="2">Total</td>
+                <td>{{ detailOrder.products.reduce((s,p)=>s+p.amount,0) }}</td>
+                <td></td>
+                <td>${{ detailOrder.products.reduce((s,p)=>s+p.amount*p.unit_price,0).toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-outline btn-sm" @click="detailOrder=null">Close Detail</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         OUTBOUND ORDER MANAGEMENT
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='outorders' && (currentRole==='admin' || currentRole==='stall_owner')">
+      <h2>Outbound Order Management</h2>
+      <p class="section-desc">
+        Manage outbound orders to buyers. Creating or editing an order deducts stock (with sufficiency check); deleting an order restores stock.
+      </p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Orders</div>
+          <div class="card-value">{{ outorders.length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Draft</div>
+          <div class="card-value">{{ outorders.filter(o=>o.status==='draft').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Completed</div>
+          <div class="card-value">{{ outorders.filter(o=>o.status==='completed').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Cancelled</div>
+          <div class="card-value">{{ outorders.filter(o=>o.status==='cancelled').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Total Outbound Value</div>
+          <div class="card-value">${{ outordersTotalValue.toFixed(2) }}</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="form-field">
+          <label>Code / ID</label>
+          <input v-model="outSearch" placeholder="OUT2024112701 or 1">
+        </div>
+        <div class="form-field">
+          <label>Buyer</label>
+          <input v-model="outSearchBuyer" placeholder="Buyer name">
+        </div>
+        <div class="form-field">
+          <label>Operator</label>
+          <input v-model="outSearchOperator" placeholder="Operator name">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="outSearchStatus">
+            <option value="">All</option>
+            <option value="draft">Draft</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button class="btn btn-outline"
+          @click="outSearch='';outSearchBuyer='';outSearchOperator='';outSearchStatus=''">Reset</button>
+        <button class="btn btn-primary" style="margin-left:auto;" @click="openAddOutorder">
+          + New Outbound Order
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Order Code</th><th>Buyer</th><th>Operator</th>
+              <th>Status</th><th>Total Qty</th><th>Total Amount</th><th>Remark</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredOutorders.length===0">
+              <td colspan="9" style="text-align:center;color:#718096;padding:20px;">No outbound orders found.</td>
+            </tr>
+            <tr v-for="o in filteredOutorders" :key="o.id">
+              <td>{{ o.id }}</td>
+              <td><code style="font-size:11px;">{{ o.code }}</code></td>
+              <td>{{ o.buyer }}</td>
+              <td>{{ o.operator }}</td>
+              <td>
+                <span v-if="o.status==='completed'" class="tag tag-success">Completed</span>
+                <span v-else-if="o.status==='cancelled'" class="tag tag-error">Cancelled</span>
+                <span v-else class="tag tag-warning">Draft</span>
+              </td>
+              <td>{{ o.products.reduce((s,p)=>s+p.amount,0) }}</td>
+              <td>${{ o.products.reduce((s,p)=>s+p.amount*p.unit_price,0).toFixed(2) }}</td>
+              <td>{{ o.remark || '-' }}</td>
+              <td style="white-space:nowrap;">
+                <button class="btn btn-secondary btn-sm" @click="viewOrder('out',o)">Detail</button>
+                <button class="btn btn-warning btn-sm"   style="margin-left:4px;" @click="openEditOutorder(o)">Edit</button>
+                <button class="btn btn-danger btn-sm"    style="margin-left:4px;" @click="deleteOutorder(o)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-if="detailOrder && detailOrderType==='out'" class="detail-panel">
+        <h3>Outbound Order Detail - {{ detailOrder.code }}</h3>
+        <dl class="dl">
+          <dt>Order ID</dt>  <dd>{{ detailOrder.id }}</dd>
+          <dt>Order Code</dt><dd>{{ detailOrder.code }}</dd>
+          <dt>Buyer</dt>     <dd>{{ detailOrder.buyer }}</dd>
+          <dt>Operator</dt>  <dd>{{ detailOrder.operator }}</dd>
+          <dt>Status</dt>
+          <dd>
+            <span v-if="detailOrder.status==='completed'" class="tag tag-success">Completed</span>
+            <span v-else-if="detailOrder.status==='cancelled'" class="tag tag-error">Cancelled</span>
+            <span v-else class="tag tag-warning">Draft</span>
+          </dd>
+          <dt>Remark</dt><dd>{{ detailOrder.remark || '-' }}</dd>
+        </dl>
+        <h3 style="margin-top:14px;">Order Items</h3>
+        <div class="table-wrap">
+          <table style="box-shadow:none;border:1px solid #e2e8f0;">
+            <thead>
+              <tr><th>#</th><th>Product</th><th>Qty</th><th>Unit Price ($)</th><th>Line Total ($)</th></tr>
+            </thead>
+            <tbody>
+              <tr v-for="(line,i) in detailOrder.products" :key="i">
+                <td>{{ i+1 }}</td>
+                <td>{{ line.name }}</td>
+                <td>{{ line.amount }}</td>
+                <td>{{ line.unit_price.toFixed(2) }}</td>
+                <td>{{ (line.amount*line.unit_price).toFixed(2) }}</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="2">Total</td>
+                <td>{{ detailOrder.products.reduce((s,p)=>s+p.amount,0) }}</td>
+                <td></td>
+                <td>${{ detailOrder.products.reduce((s,p)=>s+p.amount*p.unit_price,0).toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-outline btn-sm" @click="detailOrder=null">Close Detail</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         CUSTOMER MANAGEMENT  (admin)
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='customers' && currentRole==='admin'">
+      <h2>Customer Management</h2>
+      <p class="section-desc">
+        Manage suppliers and buyers. Customers referenced by existing orders cannot be deleted (DELETE RESTRICT).
+      </p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Customers</div>
+          <div class="card-value">{{ dbCustomers.length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Suppliers</div>
+          <div class="card-value">{{ dbCustomers.filter(c=>c.customer_type==='supplier').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Buyers</div>
+          <div class="card-value">{{ dbCustomers.filter(c=>c.customer_type==='buyer').length }}</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="form-field">
+          <label>Search (Name / Phone)</label>
+          <input v-model="custSearch" placeholder="e.g. Supplier A">
+        </div>
+        <div class="form-field">
+          <label>Type</label>
+          <select v-model="custSearchType">
+            <option value="">All</option>
+            <option value="supplier">Supplier</option>
+            <option value="buyer">Buyer</option>
+          </select>
+        </div>
+        <button class="btn btn-outline" @click="custSearch='';custSearchType=''">Reset</button>
+        <button class="btn btn-primary" style="margin-left:auto;" @click="openAddCustomer">+ Add Customer</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Phone</th><th>Address</th><th>Type</th><th>Orders</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredCustomers.length===0">
+              <td colspan="7" style="text-align:center;color:#718096;padding:20px;">No customers found.</td>
+            </tr>
+            <tr v-for="cust in filteredCustomers" :key="cust.id">
+              <td>{{ cust.id }}</td>
+              <td><strong>{{ cust.name }}</strong></td>
+              <td>{{ cust.phone }}</td>
+              <td>{{ cust.address }}</td>
+              <td>
+                <span v-if="cust.customer_type==='supplier'" class="tag tag-info">Supplier</span>
+                <span v-else class="tag tag-success">Buyer</span>
+              </td>
+              <td>{{ customerOrderCount(cust) }}</td>
+              <td style="white-space:nowrap;">
+                <button class="btn btn-secondary btn-sm" @click="openEditCustomer(cust)">Edit</button>
+                <button class="btn btn-danger btn-sm" style="margin-left:4px;" @click="deleteCustomer(cust)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         STALL MANAGEMENT  (admin)
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='stalls' && currentRole==='admin'">
+      <h2>Stall Management</h2>
+      <p class="section-desc">Manage stall list, owner assignment, and activation status.</p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Stalls</div>
+          <div class="card-value">{{ stallInfo.length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Active</div>
+          <div class="card-value" style="color:#38a169;">{{ activeStallCount }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Inactive / Suspended</div>
+          <div class="card-value" style="color:#e53e3e;">{{ stallInfo.length - activeStallCount }}</div>
+        </div>
+      </div>
+
+      <div class="search-bar">
+        <div class="form-field">
+          <label>Search Stalls</label>
+          <input v-model="stallSearch" placeholder="Stall name or owner...">
+        </div>
+        <button class="btn btn-outline" @click="stallSearch=''">Reset</button>
+        <button class="btn btn-primary" style="margin-left:auto;" @click="openAddStall">+ Add Stall</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Stall Name</th><th>Owner</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr v-if="filteredStalls.length===0">
+              <td colspan="6" style="text-align:center;color:#718096;padding:20px;">No stalls found.</td>
+            </tr>
+            <tr v-for="s in filteredStalls" :key="s.id">
+              <td>{{ s.id }}</td>
+              <td><strong>{{ s.name }}</strong></td>
+              <td>{{ s.owner }}</td>
+              <td>{{ s.description || '-' }}</td>
+              <td>
+                <span v-if="s.status==='active'" class="tag tag-success">Active</span>
+                <span v-else-if="s.status==='suspended'" class="tag tag-warning">Suspended</span>
+                <span v-else class="tag tag-error">Inactive</span>
+              </td>
+              <td style="white-space:nowrap;">
+                <button class="btn btn-secondary btn-sm" @click="openEditStall(s)">Edit</button>
+                <button class="btn btn-sm" style="margin-left:4px;"
+                  :class="s.status==='active' ? 'btn-warning' : 'btn-success'"
+                  @click="toggleStallStatus(s)">
+                  {{ s.status==='active' ? 'Deactivate' : 'Activate' }}
+                </button>
+                <button class="btn btn-danger btn-sm" style="margin-left:4px;" @click="deleteStall(s)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         STALL OWNER OVERVIEW
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+    <section v-if="page==='stallOverview' && currentRole==='stall_owner'">
+      <h2>Stall Owner Overview</h2>
+      <p class="section-desc">Personal dashboard for your stall.</p>
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">My Stall</div>
+          <div class="card-value" style="font-size:16px;">{{ currentStallName }}</div>
+          <div class="card-tag">{{ currentStallDescription }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Products</div>
+          <div class="card-value">{{ inventory.length }}</div>
+          <div class="card-tag">Out of stock: {{ lowStockGlobal }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Inbound Orders</div>
+          <div class="card-value">{{ inorders.length }}</div>
+          <div class="card-tag">Completed: {{ inorders.filter(o=>o.status==='completed').length }}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Outbound Orders</div>
+          <div class="card-value">{{ outorders.length }}</div>
+          <div class="card-tag">Completed: {{ outorders.filter(o=>o.status==='completed').length }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         CUSTOMER BROWSE
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+            <section v-if="currentRole==='customer' && page==='buyList'" class="customer-layout">
+      <div class="page-hero">
+        <div class="hero-copy">
+          <div class="mini-kicker">My List</div>
+          <h2>Your planning cart for the next purchase.</h2>
+          <p>Collect products, adjust quantities, and keep notes in one cleaner shopping-cart style space before you message the stall or commit to buying.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="hero-metric"><strong>{{ buyList.length }}</strong><span>Line items currently in your list.</span></div>
+          <div class="hero-metric"><strong>{{ checkedBuyListCount }}</strong><span>Items marked as ready to buy.</span></div>
+          <div class="hero-metric"><strong>{{ buyList.reduce((sum, item)=>sum + item.quantity, 0) }}</strong><span>Total quantity across the cart.</span></div>
+          <div class="hero-metric"><strong>${{ buyListEstimatedTotal.toFixed(2) }}</strong><span>Estimated list total at current prices.</span></div>
+        </div>
+      </div>
+
+      <div class="cart-layout">
+        <div class="cart-stack">
+          <div class="quick-add-card">
+            <div class="form-field">
+              <label>Product</label>
+              <select v-model.number="buyListDraft.product_id">
+                <option :value="''" disabled>Select a product</option>
+                <option v-for="item in inventory" :key="item.id" :value="item.id">
+                  {{ item.name }} ($ {{ item.price.toFixed(2) }})
+                </option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Qty</label>
+              <input type="number" min="1" step="1" v-model.number="buyListDraft.quantity">
+            </div>
+            <div class="form-field">
+              <label>Note</label>
+              <input v-model.trim="buyListDraft.note" placeholder="Brand, size, or reminder">
+            </div>
+            <button class="btn btn-primary" @click="addDraftToBuyList">Add item</button>
+          </div>
+
+          <div v-if="buyList.length===0" class="empty-state">
+            Your list is empty right now. Add products from Browse or use the quick-add form above to start planning your purchase.
+          </div>
+
+          <article v-for="entry in buyList" :key="entry.id" class="cart-item">
+            <div class="cart-check">
+              <input type="checkbox" v-model="entry.checked">
+            </div>
+            <div class="cart-item-main">
+              <div class="cart-item-title">
+                <div>
+                  {{ entry.name }}
+                  <small>{{ getCategoryName(entry.category_id) }} | {{ entry.sn }}</small>
+                </div>
+                <span class="tag" :class="entry.checked ? 'tag-success' : 'tag-info'">{{ entry.checked ? 'Ready' : 'Planning' }}</span>
+              </div>
+              <div class="cart-note">{{ entry.note || 'No note added yet. Add sizing, brand, or timing details to keep this list useful.' }}</div>
+            </div>
+            <div class="cart-qty">
+              <label class="control-label">Quantity</label>
+              <input type="number" min="1" step="1" v-model.number="entry.quantity">
+            </div>
+            <div class="cart-price-block">
+              <div class="cart-price">${{ (entry.price * entry.quantity).toFixed(2) }}</div>
+              <div class="cart-meta-label">${{ entry.price.toFixed(2) }} each</div>
+              <button class="btn btn-outline btn-sm" @click="removeFromBuyList(entry.id)">Remove</button>
+            </div>
+          </article>
+
+          <div class="cart-actions" v-if="buyList.length>0">
+            <button class="btn btn-secondary" @click="page='mobile'">Continue browsing</button>
+            <button class="btn btn-outline" @click="clearCheckedBuyList" :disabled="checkedBuyListCount===0">Remove checked items</button>
+          </div>
+        </div>
+
+        <aside class="cart-summary">
+          <div class="mini-kicker">Summary</div>
+          <h3>List overview</h3>
+          <p class="section-desc" style="margin-top:8px;">Use the checked state as your shortlist before contacting the stall.</p>
+          <div class="summary-divider"></div>
+          <div class="summary-row"><span>Line items</span><strong>{{ buyList.length }}</strong></div>
+          <div class="summary-row"><span>Total quantity</span><strong>{{ buyList.reduce((sum, item)=>sum + item.quantity, 0) }}</strong></div>
+          <div class="summary-row"><span>Ready items</span><strong>{{ checkedBuyListCount }}</strong></div>
+          <div class="summary-row total"><span>Estimated total</span><strong>${{ buyListEstimatedTotal.toFixed(2) }}</strong></div>
+          <button class="btn btn-primary" style="width:100%;" @click="page='chat'" :disabled="buyList.length===0">Contact stall about this list</button>
+          <button class="btn btn-secondary" style="width:100%;" @click="page='fav'">Review favourites</button>
+        </aside>
+      </div>
+    </section>
+    <section v-if="page==='mobile' && currentRole==='customer'" class="customer-layout">
+      <div class="page-hero">
+        <div class="hero-copy">
+          <div class="mini-kicker">Customer Storefront</div>
+          <h2>Browse your market in a cleaner, faster shopping flow.</h2>
+          <p>Discover products, shortlist favourites, and build a purchase list without losing track of stock or pricing.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="hero-metric"><strong>{{ customerVisibleInventory.length }}</strong><span>Products visible with current filters.</span></div>
+          <div class="hero-metric"><strong>{{ favouriteProducts.length }}</strong><span>Saved favourites for quick return visits.</span></div>
+          <div class="hero-metric"><strong>{{ buyList.length }}</strong><span>Items already added to My List.</span></div>
+          <div class="hero-metric"><strong>{{ inventory.filter(item=>item.stock===0).length }}</strong><span>Products currently out of stock.</span></div>
+        </div>
+      </div>
+
+      <div class="browse-grid">
+        <aside class="catalog-panel">
+          <div class="mini-kicker">Refine</div>
+          <h3 style="margin-bottom:8px;">Search and narrow the catalog</h3>
+          <p class="section-desc" style="margin-top:0;">Use filters to reduce the list, then move promising items into My List.</p>
+          <div class="form-field" style="margin-top:18px;">
+            <label>Search products</label>
+            <input v-model="customerSearch" placeholder="Search by product name">
+          </div>
+          <div class="form-field" style="margin-top:14px;">
+            <label>Category</label>
+            <div class="filter-row">
+              <button v-for="cat in ['All',...dbCategories.map(c=>c.name)]" :key="cat"
+                class="cat-btn" :class="{activeCat: customerCategory===cat}"
+                @click="customerCategory=cat">{{ cat }}</button>
+            </div>
+          </div>
+          <div class="card-row" style="margin-top:18px; grid-template-columns:1fr;">
+            <div class="hero-metric"><strong>{{ customerVisibleInventory.filter(item=>item.stock>0).length }}</strong><span>Available products in this filtered view.</span></div>
+            <div class="hero-metric"><strong>${{ customerVisibleInventory.reduce((sum,item)=>sum + item.price, 0).toFixed(0) }}</strong><span>Aggregate listed value across visible items.</span></div>
+          </div>
+        </aside>
+
+        <div class="catalog-grid">
+          <article v-for="item in customerVisibleInventory" :key="item.id" class="product-card">
+            <div class="product-card-top">
+              <div>
+                <h3>{{ item.name }}</h3>
+                <div class="price-line">
+                  <strong>${{ item.price.toFixed(2) }}</strong>
+                  <span class="stock-pill" :class="{out: item.stock===0}">{{ item.stock===0 ? 'Out of stock' : item.stock + ' left' }}</span>
+                </div>
+              </div>
+              <button class="heart" :class="{fav: isFav(item)}" @click="toggleFav(item)" :title="isFav(item) ? 'Remove from favourites' : 'Add to favourites'">
+                {{ isFav(item) ? '♥' : '♡' }}
+              </button>
+            </div>
+            <div class="product-meta">
+              <span class="tag tag-info">{{ getCategoryName(item.category_id) }}</span>
+              <span class="tag" v-if="item.stock>0">Ready to plan</span>
+            </div>
+            <div class="product-description">{{ item.description || 'No description available for this product yet.' }}</div>
+            <div class="product-actions">
+              <button class="btn btn-primary" @click="addToBuyList(item)">Add to My List</button>
+              <button class="btn btn-secondary" @click="page='buyList'">View List</button>
+            </div>
+          </article>
+          <div v-if="customerVisibleInventory.length===0" class="empty-state" style="grid-column:1/-1;">
+            No products match your current search and category filters. Try broadening the query or clearing the category selection.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         CUSTOMER FAVOURITES
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+        <section v-if="page==='fav' && currentRole==='customer'" class="customer-layout">
+      <div class="page-hero">
+        <div class="hero-copy">
+          <div class="mini-kicker">Saved Favourites</div>
+          <h2>Keep high-interest products close at hand.</h2>
+          <p>Your favourites act like a shortlist. From here you can quickly inspect availability and move products into My List when they are worth planning around.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="hero-metric"><strong>{{ favouriteProducts.length }}</strong><span>Saved products currently in your favourites list.</span></div>
+          <div class="hero-metric"><strong>{{ favouriteProducts.filter(item=>item.stock>0).length }}</strong><span>Favourites that are currently available.</span></div>
+        </div>
+      </div>
+
+      <div class="favorites-grid">
+        <article v-for="item in favouriteProducts" :key="item.id" class="favorite-card">
+          <div class="product-card-top">
+            <div>
+              <h3>{{ item.name }}</h3>
+              <div class="price-line">
+                <strong>${{ item.price.toFixed(2) }}</strong>
+                <span class="stock-pill" :class="{out: item.stock===0}">{{ item.stock===0 ? 'Out of stock' : item.stock + ' left' }}</span>
+              </div>
+            </div>
+            <button class="heart fav" @click="toggleFav(item)" title="Remove from favourites">♥</button>
+          </div>
+          <div class="product-meta"><span class="tag tag-info">{{ getCategoryName(item.category_id) }}</span></div>
+          <div class="product-description">{{ item.description || 'No description available for this product yet.' }}</div>
+          <div class="favorite-actions">
+            <button class="btn btn-primary" @click="addToBuyList(item)">Add to My List</button>
+            <button class="btn btn-secondary" @click="page='mobile'">Browse more</button>
+          </div>
+        </article>
+        <div v-if="favouriteProducts.length===0" class="empty-state" style="grid-column:1/-1;">
+          You have not saved any favourites yet. Browse the catalog and tap the heart button on products you want to revisit.
+        </div>
+      </div>
+    </section>
+
+    <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+         CHAT
+    鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+        <section v-if="page==='chat' && (currentRole==='stall_owner' || currentRole==='customer')" class="customer-layout">
+      <div class="page-hero" v-if="currentRole==='customer'">
+        <div class="hero-copy">
+          <div class="mini-kicker">Messages</div>
+          <h2>Talk to the stall without leaving the workspace.</h2>
+          <p>Use chat to confirm stock, ask about shipping, or discuss the products you prepared in My List.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="hero-metric"><strong>{{ messages.length }}</strong><span>Total messages in this thread.</span></div>
+          <div class="hero-metric"><strong>{{ checkedBuyListCount }}</strong><span>Ready items you can mention to the stall.</span></div>
+        </div>
+      </div>
+
+      <div class="chat-shell">
+        <aside class="chat-sidebar">
+          <div class="mini-kicker">Conversation</div>
+          <h3>{{ currentRole==='customer' ? 'Stall support thread' : 'Customer conversation' }}</h3>
+          <p class="section-desc" style="margin-top:8px;">Keep the conversation focused on availability, pricing, and final purchase details.</p>
+          <div class="conversation-card">
+            <div class="mini-kicker" style="margin-bottom:10px;">Quick context</div>
+            <div class="summary-row"><span>Messages</span><strong>{{ messages.length }}</strong></div>
+            <div class="summary-row"><span>Items in My List</span><strong>{{ buyList.length }}</strong></div>
+            <div class="summary-row"><span>Ready to buy</span><strong>{{ checkedBuyListCount }}</strong></div>
+          </div>
+          <button class="btn btn-secondary" @click="page='buyList'" v-if="currentRole==='customer'">Open My List</button>
+        </aside>
+
+        <div class="chat-window">
+          <div class="chat-toolbar">
+            <div>
+              <div class="mini-kicker">Live thread</div>
+              <h3>{{ currentRole==='customer' ? 'Chat with Stall Owner' : 'Chat with Customer' }}</h3>
+              <p class="section-desc" style="margin-top:6px;">Responses appear in a focused threaded history below.</p>
+            </div>
+            <span class="tag tag-info">Web chat</span>
+          </div>
+          <div id="chatArea">
+            <div v-for="m in messages" :key="m.id" class="chat-msg" :class="{stall: m.from==='Stall Owner'}">
+              <div class="chat-meta">{{ m.from }} - {{ m.time }}</div>
+              <div>{{ m.text }}</div>
+            </div>
+          </div>
+          <div class="chat-compose">
+            <input v-model="chatInput" type="text" placeholder="Ask about stock, pricing, or your planned items...">
+            <button class="btn btn-primary" @click="sendChat">Send message</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /v-else main app -->
+
+
+  <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+       MODAL: ADD / EDIT PRODUCT
+  鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+  <div v-if="productModal.show" class="modal-overlay" @click.self="productModal.show=false">
+    <div class="modal-box">
+      <h3>{{ productModal.mode==='add' ? '+ Add New Product' : 'Edit Product' }}</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>SN (Product Code) *</label>
+          <input v-model="productModal.form.sn" placeholder="e.g. CLT-010">
+        </div>
+        <div class="form-field">
+          <label>Product Name *</label>
+          <input v-model="productModal.form.name" placeholder="e.g. Blue T-Shirt">
+        </div>
+        <div class="form-field">
+          <label>Category *</label>
+          <select v-model="productModal.form.category_id">
+            <option v-for="cat in dbCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Price ($) *</label>
+          <input v-model.number="productModal.form.price" type="number" min="0" step="0.01">
+        </div>
+        <div class="form-field">
+          <label>{{ productModal.mode==='add' ? 'Initial Stock' : 'Stock (read-only)' }}</label>
+          <input v-model.number="productModal.form.stock" type="number" min="0"
+                 :disabled="productModal.mode==='edit'">
+          <span v-if="productModal.mode==='edit'" class="readonly-hint">
+            Stock is managed exclusively through inbound/outbound orders.
+          </span>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Description</label>
+          <input v-model="productModal.form.description" placeholder="Short product description">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="productModal.show=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveProduct">
+          {{ productModal.mode==='add' ? 'Add Product' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+       MODAL: ADD / EDIT CATEGORY
+  鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+  <div v-if="categoryModal.show" class="modal-overlay" @click.self="categoryModal.show=false">
+    <div class="modal-box-sm">
+      <h3>{{ categoryModal.mode==='add' ? '+ Add New Category' : 'Edit Category' }}</h3>
+      <div class="form-field" style="margin-bottom:10px;">
+        <label>Category Name *</label>
+        <input v-model="categoryModal.form.name" placeholder="e.g. Toys & Games">
+      </div>
+      <div class="form-field" style="margin-bottom:10px;">
+        <label>Description</label>
+        <input v-model="categoryModal.form.description" placeholder="Short description of this category">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="categoryModal.show=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveCategory">
+          {{ categoryModal.mode==='add' ? 'Add Category' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+       MODAL: ADD / EDIT CUSTOMER
+  鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+  <div v-if="customerModal.show" class="modal-overlay" @click.self="customerModal.show=false">
+    <div class="modal-box-sm">
+      <h3>{{ customerModal.mode==='add' ? '+ Add New Customer' : 'Edit Customer' }}</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Customer Name *</label>
+          <input v-model="customerModal.form.name" placeholder="e.g. Supplier D">
+        </div>
+        <div class="form-field">
+          <label>Phone *</label>
+          <input v-model="customerModal.form.phone" placeholder="e.g. 13800000005">
+        </div>
+        <div class="form-field">
+          <label>Type *</label>
+          <select v-model="customerModal.form.customer_type">
+            <option value="supplier">Supplier</option>
+            <option value="buyer">Buyer</option>
+          </select>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Address *</label>
+          <input v-model="customerModal.form.address" placeholder="e.g. 123 Main Street">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="customerModal.show=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveCustomer">
+          {{ customerModal.mode==='add' ? 'Add Customer' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+       MODAL: ADD / EDIT STALL
+  鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+  <div v-if="stallModal.show" class="modal-overlay" @click.self="stallModal.show=false">
+    <div class="modal-box-sm">
+      <h3>{{ stallModal.mode==='add' ? '+ Add New Stall' : 'Edit Stall' }}</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Stall Name *</label>
+          <input v-model="stallModal.form.name" placeholder="e.g. Zhang's Fresh Produce">
+        </div>
+        <div class="form-field">
+          <label>Owner Name *</label>
+          <input v-model="stallModal.form.owner" placeholder="e.g. Owner Zhang">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="stallModal.form.status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Description</label>
+          <input v-model="stallModal.form.description" placeholder="Short stall description">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="stallModal.show=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveStall">
+          {{ stallModal.mode==='add' ? 'Add Stall' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+       MODAL: ADD / EDIT INBOUND ORDER
+  鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+  <div v-if="inorderModal.show" class="modal-overlay" @click.self="inorderModal.show=false">
+    <div class="modal-box">
+      <h3>{{ inorderModal.mode==='add' ? '+ New Inbound Order' : 'Edit Inbound Order' }}</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Order Code *</label>
+          <input v-model="inorderModal.form.code" placeholder="e.g. IN2024120101"
+                 :disabled="inorderModal.mode==='edit'">
+        </div>
+        <div class="form-field">
+          <label>Supplier *</label>
+          <select v-model="inorderModal.form.supplier">
+            <option v-for="s in suppliers" :key="s" :value="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Operator *</label>
+          <input v-model="inorderModal.form.operator" placeholder="Handler name">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="inorderModal.form.status">
+            <option value="draft">Draft</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Remark</label>
+          <input v-model="inorderModal.form.remark" placeholder="Optional remark">
+        </div>
+      </div>
+      <div class="items-editor">
+        <div class="ie-header">
+          <strong>Order Items</strong>
+          <button class="btn btn-secondary btn-sm" @click="addOrderLine('in')">+ Add Item</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Product *</th><th>Qty *</th><th>Unit Price ($) *</th><th>Line Total</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr v-if="inorderModal.form.lines.length===0">
+                <td colspan="6" style="text-align:center;color:#718096;padding:14px;">No items yet. Click "+ Add Item".</td>
+              </tr>
+              <tr v-for="(line,i) in inorderModal.form.lines" :key="i">
+                <td>{{ i+1 }}</td>
+                <td>
+                  <select v-model="line.product_id" @change="fillInorderPrice(line)" style="min-width:160px;">
+                    <option v-for="p in inventory" :key="p.id" :value="p.id">{{ p.name }} ({{ p.sn }})</option>
+                  </select>
+                </td>
+                <td><input v-model.number="line.amount" type="number" min="1" style="width:70px;"></td>
+                <td><input v-model.number="line.unit_price" type="number" min="0" step="0.01" style="width:90px;"></td>
+                <td>${{ ((line.amount||0)*(line.unit_price||0)).toFixed(2) }}</td>
+                <td><button class="btn btn-danger btn-sm" @click="removeOrderLine('in',i)">Delete</button></td>
+              </tr>
+              <tr v-if="inorderModal.form.lines.length>0" class="total-row">
+                <td colspan="2">Total</td>
+                <td>{{ inorderModal.form.lines.reduce((s,l)=>s+(l.amount||0),0) }}</td>
+                <td></td>
+                <td colspan="2">
+                  ${{ inorderModal.form.lines.reduce((s,l)=>s+(l.amount||0)*(l.unit_price||0),0).toFixed(2) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11px;color:#718096;margin-top:6px;">
+          鈩癸笍 On save, product stock is automatically increased by each item's quantity.
+          When editing, old quantities are reversed before the new ones are applied.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="inorderModal.show=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveInorder">
+          {{ inorderModal.mode==='add' ? 'Create Order' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+       MODAL: ADD / EDIT OUTBOUND ORDER
+  鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
+  <div v-if="outorderModal.show" class="modal-overlay" @click.self="outorderModal.show=false">
+    <div class="modal-box">
+      <h3>{{ outorderModal.mode==='add' ? '+ New Outbound Order' : 'Edit Outbound Order' }}</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Order Code *</label>
+          <input v-model="outorderModal.form.code" placeholder="e.g. OUT2024120101"
+                 :disabled="outorderModal.mode==='edit'">
+        </div>
+        <div class="form-field">
+          <label>Buyer *</label>
+          <select v-model="outorderModal.form.buyer">
+            <option v-for="b in buyers" :key="b" :value="b">{{ b }}</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Operator *</label>
+          <input v-model="outorderModal.form.operator" placeholder="Handler name">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="outorderModal.form.status">
+            <option value="draft">Draft</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="form-field" style="grid-column:1/-1;">
+          <label>Remark</label>
+          <input v-model="outorderModal.form.remark" placeholder="Optional remark">
+        </div>
+      </div>
+      <div class="items-editor">
+        <div class="ie-header">
+          <strong>Order Items</strong>
+          <button class="btn btn-secondary btn-sm" @click="addOrderLine('out')">+ Add Item</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Product *</th><th>Qty *</th><th>Unit Price ($) *</th>
+                <th>Line Total</th><th>Available Stock</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="outorderModal.form.lines.length===0">
+                <td colspan="7" style="text-align:center;color:#718096;padding:14px;">No items yet. Click "+ Add Item".</td>
+              </tr>
+              <tr v-for="(line,i) in outorderModal.form.lines" :key="i">
+                <td>{{ i+1 }}</td>
+                <td>
+                  <select v-model="line.product_id" @change="fillOutorderPrice(line)" style="min-width:160px;">
+                    <option v-for="p in inventory" :key="p.id" :value="p.id">{{ p.name }} ({{ p.sn }})</option>
+                  </select>
+                </td>
+                <td>
+                  <input v-model.number="line.amount" type="number" min="1" style="width:70px;"
+                         :style="{borderColor: getAvailableStock(line,i)<0?'#e53e3e':''}">
+                </td>
+                <td><input v-model.number="line.unit_price" type="number" min="0" step="0.01" style="width:90px;"></td>
+                <td>${{ ((line.amount||0)*(line.unit_price||0)).toFixed(2) }}</td>
+                <td>
+                  <span :style="{color: getAvailableStock(line,i)<0?'#e53e3e':'#38a169', fontSize:'11px', fontWeight:'600'}">
+                    {{ getAvailableStock(line,i) }}
+                  </span>
+                  <span v-if="getAvailableStock(line,i)<0" style="color:#e53e3e;font-size:10px;"> insufficient</span>
+                </td>
+                <td><button class="btn btn-danger btn-sm" @click="removeOrderLine('out',i)">Delete</button></td>
+              </tr>
+              <tr v-if="outorderModal.form.lines.length>0" class="total-row">
+                <td colspan="2">Total</td>
+                <td>{{ outorderModal.form.lines.reduce((s,l)=>s+(l.amount||0),0) }}</td>
+                <td></td>
+                <td colspan="3">
+                  ${{ outorderModal.form.lines.reduce((s,l)=>s+(l.amount||0)*(l.unit_price||0),0).toFixed(2) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:11px;color:#718096;margin-top:6px;">
+          鈩癸笍 "Available Stock" reflects current stock adjusted for items already in this order.
+          Red = insufficient - saving will be blocked.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="outorderModal.show=false">Cancel</button>
+        <button class="btn btn-primary" @click="saveOutorder">
+          {{ outorderModal.mode==='add' ? 'Create Order' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /#app -->
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+
+  data() {
+    return {
+      loggedIn: false,
+      currentRole: null,
+      currentUserName: '',
+      page: 'adminOverview',
+
+      loginForm: { role: 'admin', username: '', password: '' },
+
+      // categories table (now with descriptions)
+      dbCategories: [
+        { id:1, name:'Clothing',         description:'Clothes, shoes, accessories, etc.' },
+        { id:2, name:'Electronics',      description:'Mobile phones, tablets, computer accessories, etc.' },
+        { id:3, name:'Food & Beverages', description:'Snacks, drinks, fruits, etc.' },
+        { id:4, name:'Home Essentials',  description:'Daily necessities, cleaning supplies, etc.' },
+        { id:5, name:'Books & Media',    description:'Books, music, movies, etc.' },
+        { id:6, name:'Other',            description:'Other miscellaneous products' }
+      ],
+
+      // customer table (full records with all DB fields)
+      dbCustomers: [
+        { id:1, name:'Supplier A', phone:'13800000001', address:'Clementi west street', customer_type:'supplier' },
+        { id:2, name:'Supplier B', phone:'13800000002', address:'Jurong West',          customer_type:'supplier' },
+        { id:3, name:'Buyer C',    phone:'13800000003', address:'Pioneer',              customer_type:'buyer' }
+      ],
+
+      inventory: [],
+      stallInfo: [
+        { id:1, name:'Li Stall General Store', owner:'Stall Owner Li',
+          description:'Operating various product categories with complete variety', status:'active' }
+      ],
+      inorders: [],
+      outorders: [],
+      favourites: [],
+      buyList: [],
+      buyListDraft: { product_id: '', quantity: 1, note: '' },
+      messages: [],
+      chatInput: '',
+
+      selectedCategory: 'All',
+      invSearch: '',
+      catSearch: '',
+      custSearch: '',
+      custSearchType: '',
+      stallSearch: '',
+      inSearch: '', inSearchSupplier: '', inSearchOperator: '', inSearchStatus: '',
+      outSearch: '', outSearchBuyer: '', outSearchOperator: '', outSearchStatus: '',
+      customerSearch: '',
+      customerCategory: 'All',
+      detailOrder: null,
+      detailOrderType: null,
+
+      productModal: {
+        show: false, mode: 'add', editId: null,
+        form: { sn:'', name:'', category_id:1, price:0, stock:0, description:'' }
+      },
+      categoryModal: {
+        show: false, mode: 'add', editId: null,
+        form: { name:'', description:'' }
+      },
+      customerModal: {
+        show: false, mode: 'add', editId: null,
+        form: { name:'', phone:'', address:'', customer_type:'supplier' }
+      },
+      stallModal: {
+        show: false, mode: 'add', editId: null,
+        form: { name:'', owner:'', description:'', status:'active' }
+      },
+      inorderModal: {
+        show: false, mode: 'add', editId: null, originalLines: [],
+        form: { code:'', supplier:'Supplier A', operator:'', status:'draft', remark:'', lines:[] }
+      },
+      outorderModal: {
+        show: false, mode: 'add', editId: null, originalLines: [],
+        form: { code:'', buyer:'Buyer C', operator:'', status:'draft', remark:'', lines:[] }
+      }
+    };
+  },
+
+  computed: {
+    currentRoleLabel() {
+      const m = { admin:'Administrator', stall_owner:'Stall Owner', customer:'Customer' };
+      return m[this.currentRole] || '';
+    },
+    currentStallName()        { return this.stallInfo[0]?.name || ''; },
+    currentStallDescription() { return this.stallInfo[0]?.description || ''; },
+    activeStallCount()        { return this.stallInfo.filter(s=>s.status==='active').length; },
+
+    // Derived supplier/buyer name lists for order dropdowns (dynamic from dbCustomers)
+    suppliers() { return this.dbCustomers.filter(c=>c.customer_type==='supplier').map(c=>c.name); },
+    buyers()    { return this.dbCustomers.filter(c=>c.customer_type==='buyer').map(c=>c.name); },
+
+    filteredInventory() {
+      let list = this.inventory;
+      if (this.selectedCategory !== 'All') {
+        const cat = this.dbCategories.find(c=>c.name===this.selectedCategory);
+        if (cat) list = list.filter(i=>i.category_id===cat.id);
+      }
+      if (this.invSearch.trim()) {
+        const q = this.invSearch.trim().toLowerCase();
+        list = list.filter(i=>
+          String(i.id) === q ||
+          i.name.toLowerCase().includes(q) ||
+          i.sn.toLowerCase().includes(q)
+        );
+      }
+      return list;
+    },
+    lowStockCountFiltered() { return this.filteredInventory.filter(i=>i.stock===0).length; },
+    totalStockFiltered()    { return this.filteredInventory.reduce((s,i)=>s+i.stock,0); },
+    lowStockGlobal()        { return this.inventory.filter(i=>i.stock===0).length; },
+
+    filteredCategories() {
+      if (!this.catSearch.trim()) return this.dbCategories;
+      const q = this.catSearch.trim().toLowerCase();
+      return this.dbCategories.filter(c=>c.name.toLowerCase().includes(q));
+    },
+    categoriesInUseCount() {
+      const usedIds = new Set(this.inventory.map(p=>p.category_id));
+      return this.dbCategories.filter(c=>usedIds.has(c.id)).length;
+    },
+
+    filteredCustomers() {
+      let list = this.dbCustomers;
+      if (this.custSearch.trim()) {
+        const q = this.custSearch.trim().toLowerCase();
+        list = list.filter(c=>c.name.toLowerCase().includes(q) || c.phone.includes(q));
+      }
+      if (this.custSearchType) list = list.filter(c=>c.customer_type===this.custSearchType);
+      return list;
+    },
+
+    filteredStalls() {
+      if (!this.stallSearch.trim()) return this.stallInfo;
+      const q = this.stallSearch.trim().toLowerCase();
+      return this.stallInfo.filter(s=>s.name.toLowerCase().includes(q) || s.owner.toLowerCase().includes(q));
+    },
+
+    filteredInorders() {
+      let list = this.inorders;
+      if (this.inSearch.trim()) {
+        const q = this.inSearch.trim().toLowerCase();
+        list = list.filter(o=> String(o.id)===q || o.code.toLowerCase().includes(q));
+      }
+      if (this.inSearchSupplier.trim()) {
+        const q = this.inSearchSupplier.trim().toLowerCase();
+        list = list.filter(o=>o.supplier.toLowerCase().includes(q));
+      }
+      if (this.inSearchOperator.trim()) {
+        const q = this.inSearchOperator.trim().toLowerCase();
+        list = list.filter(o=>o.operator.toLowerCase().includes(q));
+      }
+      if (this.inSearchStatus) list = list.filter(o=>o.status===this.inSearchStatus);
+      return list;
+    },
+    inordersTotalValue() {
+      return this.inorders.reduce((s,o)=>s+o.products.reduce((ss,p)=>ss+p.amount*p.unit_price,0),0);
+    },
+
+    filteredOutorders() {
+      let list = this.outorders;
+      if (this.outSearch.trim()) {
+        const q = this.outSearch.trim().toLowerCase();
+        list = list.filter(o=> String(o.id)===q || o.code.toLowerCase().includes(q));
+      }
+      if (this.outSearchBuyer.trim()) {
+        const q = this.outSearchBuyer.trim().toLowerCase();
+        list = list.filter(o=>o.buyer.toLowerCase().includes(q));
+      }
+      if (this.outSearchOperator.trim()) {
+        const q = this.outSearchOperator.trim().toLowerCase();
+        list = list.filter(o=>o.operator.toLowerCase().includes(q));
+      }
+      if (this.outSearchStatus) list = list.filter(o=>o.status===this.outSearchStatus);
+      return list;
+    },
+    outordersTotalValue() {
+      return this.outorders.reduce((s,o)=>s+o.products.reduce((ss,p)=>ss+p.amount*p.unit_price,0),0);
+    },
+
+    customerVisibleInventory() {
+      let list = this.inventory;
+      if (this.customerCategory !== 'All') {
+        const cat = this.dbCategories.find(c=>c.name===this.customerCategory);
+        if (cat) list = list.filter(i=>i.category_id===cat.id);
+      }
+      if (this.customerSearch.trim()) {
+        const q = this.customerSearch.trim().toLowerCase();
+        list = list.filter(i=>i.name.toLowerCase().includes(q));
+      }
+      return list;
+    },
+    favouriteProducts() { return this.inventory.filter(i=>this.favourites.includes(i.id)); },
+    checkedBuyListCount() { return this.buyList.filter(item=>item.checked).length; },
+    buyListEstimatedTotal() {
+      return this.buyList.reduce((sum, item)=>sum + (item.price * (item.quantity || 0)), 0);
+    }
+  },
+
+  methods: {
+
+    // 鈹€鈹€ Helpers 鈹€鈹€
+    getCategoryName(id) { return this.dbCategories.find(c=>c.id===id)?.name || '-'; },
+    getProductById(id)  { return this.inventory.find(p=>p.id===id) || null; },
+    nextProductId()  { return this.inventory.length ? Math.max(...this.inventory.map(i=>i.id))+1  : 1; },
+    nextInorderId()  { return this.inorders.length  ? Math.max(...this.inorders.map(o=>o.id))+1   : 1; },
+    nextOutorderId() { return this.outorders.length ? Math.max(...this.outorders.map(o=>o.id))+1  : 1; },
+    nextCategoryId() { return this.dbCategories.length ? Math.max(...this.dbCategories.map(c=>c.id))+1 : 1; },
+    nextCustomerId() { return this.dbCustomers.length ? Math.max(...this.dbCustomers.map(c=>c.id))+1 : 1; },
+    nextStallId()    { return this.stallInfo.length ? Math.max(...this.stallInfo.map(s=>s.id))+1 : 1; },
+    productCountByCategory(catId) { return this.inventory.filter(p=>p.category_id===catId).length; },
+    customerOrderCount(cust) {
+      if (cust.customer_type === 'supplier') return this.inorders.filter(o=>o.supplier===cust.name).length;
+      return this.outorders.filter(o=>o.buyer===cust.name).length;
+    },
+
+    adjustStock(productId, delta) {
+      const p = this.getProductById(productId);
+      if (p) p.stock = Math.max(0, p.stock + delta);
+    },
+
+    linesToProducts(lines) {
+      return lines.map(l => {
+        const prod = this.getProductById(l.product_id);
+        return { product_id: l.product_id, name: prod ? prod.name : '(deleted)', amount: l.amount || 0, unit_price: l.unit_price || 0 };
+      });
+    },
+
+    genCode(prefix) {
+      const t = new Date();
+      return prefix + t.getFullYear() + String(t.getMonth()+1).padStart(2,'0') + String(t.getDate()).padStart(2,'0')
+        + String(t.getHours()).padStart(2,'0') + String(t.getMinutes()).padStart(2,'0') + String(t.getSeconds()).padStart(2,'0');
+    },
+
+    // 鈹€鈹€ Auth 鈹€鈹€
+    doLogin() {
+      if (!this.loginForm.username.trim()) { alert('Please enter a username.'); return; }
+      this.loggedIn = true;
+      this.currentRole = this.loginForm.role;
+      this.currentUserName = this.loginForm.username.trim();
+      this.page = this.currentRole==='admin' ? 'adminOverview' : this.currentRole==='stall_owner' ? 'stallOverview' : 'mobile';
+    },
+    logout() {
+      this.loggedIn = false; this.currentRole = null; this.currentUserName = '';
+      this.page = 'adminOverview'; this.invSearch = ''; this.selectedCategory = 'All';
+      this.customerSearch = ''; this.customerCategory = 'All'; this.detailOrder = null;
+      this.buyListDraft = { product_id: '', quantity: 1, note: '' };
+    },
+
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 PRODUCT MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+    openAddProduct() {
+      this.productModal = { show:true, mode:'add', editId:null, form:{ sn:'', name:'', category_id:1, price:0, stock:0, description:'' } };
+    },
+    openEditProduct(item) {
+      this.productModal = { show:true, mode:'edit', editId:item.id,
+        form:{ sn:item.sn, name:item.name, category_id:item.category_id, price:item.price, stock:item.stock, description:item.description }
+      };
+    },
+    saveProduct() {
+      const f = this.productModal.form;
+      if (!f.sn.trim())   { alert('Product SN is required.');   return; }
+      if (!f.name.trim()) { alert('Product name is required.'); return; }
+      if (f.price < 0)    { alert('Price cannot be negative.'); return; }
+
+      if (this.productModal.mode === 'add') {
+        if (this.inventory.some(i=>i.sn.toLowerCase()===f.sn.trim().toLowerCase())) {
+          alert(`SN "${f.sn.trim()}" already exists.`); return;
+        }
+        this.inventory.push({
+          id: this.nextProductId(), sn: f.sn.trim(), name: f.name.trim(),
+          category_id: f.category_id, price: Number(f.price)||0, stock: Number(f.stock)||0, description: f.description.trim()
+        });
+        alert('Product added successfully.');
+      } else {
+        const item = this.inventory.find(i=>i.id===this.productModal.editId);
+        if (!item) return;
+        if (f.sn.trim().toLowerCase() !== item.sn.toLowerCase() &&
+            this.inventory.some(i=>i.sn.toLowerCase()===f.sn.trim().toLowerCase())) {
+          alert(`SN "${f.sn.trim()}" is already used by another product.`); return;
+        }
+        item.sn = f.sn.trim(); item.name = f.name.trim(); item.category_id = f.category_id;
+        item.price = Number(f.price)||0; item.description = f.description.trim();
+        // Stock is not updated here and remains read-only in edit mode
+        alert('Product updated successfully.');
+      }
+      this.productModal.show = false;
+    },
+    deleteProduct(item) {
+      const inRefs  = this.inorders.some(o=>o.products.some(p=>p.product_id===item.id));
+      const outRefs = this.outorders.some(o=>o.products.some(p=>p.product_id===item.id));
+      if (inRefs || outRefs) {
+        const refs = [];
+        if (inRefs)  refs.push('inbound');
+        if (outRefs) refs.push('outbound');
+        alert(`Cannot delete "${item.name}" (DELETE RESTRICT).\n\nThis product is referenced by ${refs.join(' and ')} order records.\nRemove those order items first.`);
+        return;
+      }
+      if (!confirm(`Permanently delete product "${item.name}" (${item.sn})?`)) return;
+      this.inventory = this.inventory.filter(i=>i.id!==item.id);
+      this.favourites = this.favourites.filter(fid=>fid!==item.id);
+      this.buyList = this.buyList.filter(entry=>entry.product_id!==item.id);
+      alert('Product deleted.');
+    },
+
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 CATEGORY MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+    openAddCategory() {
+      this.categoryModal = { show:true, mode:'add', editId:null, form:{ name:'', description:'' } };
+    },
+    openEditCategory(cat) {
+      this.categoryModal = { show:true, mode:'edit', editId:cat.id, form:{ name:cat.name, description:cat.description||'' } };
+    },
+    saveCategory() {
+      const f = this.categoryModal.form;
+      if (!f.name.trim()) { alert('Category name is required.'); return; }
+      if (this.categoryModal.mode === 'add') {
+        if (this.dbCategories.some(c=>c.name.toLowerCase()===f.name.trim().toLowerCase())) {
+          alert(`Category "${f.name.trim()}" already exists.`); return;
+        }
+        this.dbCategories.push({ id: this.nextCategoryId(), name: f.name.trim(), description: f.description.trim() });
+        alert('Category added successfully.');
+      } else {
+        const cat = this.dbCategories.find(c=>c.id===this.categoryModal.editId);
+        if (!cat) return;
+        if (f.name.trim().toLowerCase() !== cat.name.toLowerCase() &&
+            this.dbCategories.some(c=>c.name.toLowerCase()===f.name.trim().toLowerCase())) {
+          alert(`Category name "${f.name.trim()}" is already in use.`); return;
+        }
+        cat.name = f.name.trim(); cat.description = f.description.trim();
+        alert('Category updated successfully.');
+      }
+      this.categoryModal.show = false;
+    },
+    deleteCategory(cat) {
+      const prodCount = this.productCountByCategory(cat.id);
+      if (prodCount > 0) {
+        alert(`Cannot delete category "${cat.name}" (DELETE RESTRICT).\n\n${prodCount} product(s) are assigned to this category.\nReassign or delete those products first.`);
+        return;
+      }
+      if (!confirm(`Permanently delete category "${cat.name}"?`)) return;
+      this.dbCategories = this.dbCategories.filter(c=>c.id!==cat.id);
+      alert('Category deleted.');
+    },
+
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 CUSTOMER MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+    openAddCustomer() {
+      this.customerModal = { show:true, mode:'add', editId:null, form:{ name:'', phone:'', address:'', customer_type:'supplier' } };
+    },
+    openEditCustomer(cust) {
+      this.customerModal = { show:true, mode:'edit', editId:cust.id,
+        form:{ name:cust.name, phone:cust.phone, address:cust.address, customer_type:cust.customer_type }
+      };
+    },
+    saveCustomer() {
+      const f = this.customerModal.form;
+      if (!f.name.trim())    { alert('Customer name is required.');  return; }
+      if (!f.phone.trim())   { alert('Phone number is required.');   return; }
+      if (!f.address.trim()) { alert('Address is required.');        return; }
+      if (this.customerModal.mode === 'add') {
+        this.dbCustomers.push({
+          id: this.nextCustomerId(), name: f.name.trim(), phone: f.phone.trim(),
+          address: f.address.trim(), customer_type: f.customer_type
+        });
+        alert('Customer added successfully.');
+      } else {
+        const cust = this.dbCustomers.find(c=>c.id===this.customerModal.editId);
+        if (!cust) return;
+        const oldName = cust.name;
+        const newName = f.name.trim();
+        if (oldName !== newName) {
+          if (cust.customer_type === 'supplier') {
+            this.inorders.forEach(o=>{ if (o.supplier===oldName) o.supplier = newName; });
+          } else {
+            this.outorders.forEach(o=>{ if (o.buyer===oldName) o.buyer = newName; });
+          }
+        }
+        cust.name = newName; cust.phone = f.phone.trim();
+        cust.address = f.address.trim(); cust.customer_type = f.customer_type;
+        alert('Customer updated successfully.');
+      }
+      this.customerModal.show = false;
+    },
+    deleteCustomer(cust) {
+      let hasRefs = false, refType = '';
+      if (cust.customer_type === 'supplier') {
+        hasRefs = this.inorders.some(o=>o.supplier===cust.name); refType = 'inbound';
+      } else {
+        hasRefs = this.outorders.some(o=>o.buyer===cust.name); refType = 'outbound';
+      }
+      if (hasRefs) {
+        alert(`Cannot delete "${cust.name}" (DELETE RESTRICT).\n\nThis customer is referenced by ${refType} order records.\nDelete those orders first.`);
+        return;
+      }
+      if (!confirm(`Permanently delete customer "${cust.name}"?`)) return;
+      this.dbCustomers = this.dbCustomers.filter(c=>c.id!==cust.id);
+      alert('Customer deleted.');
+    },
+
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 STALL MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+    openAddStall() {
+      this.stallModal = { show:true, mode:'add', editId:null, form:{ name:'', owner:'', description:'', status:'active' } };
+    },
+    openEditStall(stall) {
+      this.stallModal = { show:true, mode:'edit', editId:stall.id,
+        form:{ name:stall.name, owner:stall.owner, description:stall.description||'', status:stall.status }
+      };
+    },
+    saveStall() {
+      const f = this.stallModal.form;
+      if (!f.name.trim())  { alert('Stall name is required.');  return; }
+      if (!f.owner.trim()) { alert('Owner name is required.');  return; }
+      if (this.stallModal.mode === 'add') {
+        this.stallInfo.push({ id: this.nextStallId(), name: f.name.trim(), owner: f.owner.trim(), description: f.description.trim(), status: f.status });
+        alert('Stall added successfully.');
+      } else {
+        const stall = this.stallInfo.find(s=>s.id===this.stallModal.editId);
+        if (!stall) return;
+        stall.name = f.name.trim(); stall.owner = f.owner.trim();
+        stall.description = f.description.trim(); stall.status = f.status;
+        alert('Stall updated successfully.');
+      }
+      this.stallModal.show = false;
+    },
+    deleteStall(stall) {
+      if (!confirm(`Permanently delete stall "${stall.name}"?`)) return;
+      this.stallInfo = this.stallInfo.filter(s=>s.id!==stall.id);
+      alert('Stall deleted.');
+    },
+    toggleStallStatus(s) { s.status = s.status==='active' ? 'inactive' : 'active'; },
+
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 INBOUND ORDER MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+    openAddInorder() {
+      this.inorderModal = { show:true, mode:'add', editId:null, originalLines: [],
+        form:{ code:this.genCode('IN'), supplier:this.suppliers[0]||'', operator:this.currentUserName, status:'draft', remark:'', lines:[] }
+      };
+    },
+    openEditInorder(order) {
+      const originalLines = order.products.map(p=>({ product_id:p.product_id, amount:p.amount, unit_price:p.unit_price }));
+      this.inorderModal = { show:true, mode:'edit', editId:order.id, originalLines,
+        form:{ code:order.code, supplier:order.supplier, operator:order.operator, status:order.status, remark:order.remark,
+          lines: order.products.map(p=>({ product_id:p.product_id, amount:p.amount, unit_price:p.unit_price }))
+        }
+      };
+    },
+    addOrderLine(type) {
+      if (!this.inventory.length) { alert('No products available.'); return; }
+      const firstProd = this.inventory[0];
+      const line = { product_id: firstProd.id, amount: 1, unit_price: firstProd.price };
+      if (type === 'in') this.inorderModal.form.lines.push(line);
+      else               this.outorderModal.form.lines.push({ ...line });
+    },
+    removeOrderLine(type, idx) {
+      if (type === 'in') this.inorderModal.form.lines.splice(idx,1);
+      else               this.outorderModal.form.lines.splice(idx,1);
+    },
+    fillInorderPrice(line)  { const p = this.getProductById(line.product_id); if (p) line.unit_price = p.price; },
+    fillOutorderPrice(line) { const p = this.getProductById(line.product_id); if (p) line.unit_price = p.price; },
+
+    saveInorder() {
+      const f = this.inorderModal.form;
+      if (!f.code.trim())     { alert('Order code is required.');  return; }
+      if (!f.supplier)        { alert('Supplier is required.');    return; }
+      if (!f.operator.trim()) { alert('Operator is required.');    return; }
+      if (f.lines.length===0) { alert('Add at least one item.');   return; }
+      for (const l of f.lines) {
+        if (!l.amount || l.amount <= 0) { alert('All quantities must be > 0.'); return; }
+        if (l.unit_price === undefined || l.unit_price < 0) { alert('All unit prices must be 鈮?0.'); return; }
+      }
+      if (this.inorderModal.mode === 'add') {
+        if (this.inorders.some(o=>o.code===f.code.trim())) { alert(`Order code "${f.code.trim()}" already exists.`); return; }
+        const products = this.linesToProducts(f.lines);
+        products.forEach(p=>this.adjustStock(p.product_id, +p.amount));
+        this.inorders.push({ id:this.nextInorderId(), code:f.code.trim(), supplier:f.supplier, operator:f.operator, status:f.status, remark:f.remark.trim(), products });
+        alert('Inbound order created. Stock has been increased accordingly.');
+      } else {
+        const order = this.inorders.find(o=>o.id===this.inorderModal.editId);
+        if (!order) return;
+        this.inorderModal.originalLines.forEach(l=>this.adjustStock(l.product_id, -l.amount));
+        const products = this.linesToProducts(f.lines);
+        products.forEach(p=>this.adjustStock(p.product_id, +p.amount));
+        order.supplier = f.supplier; order.operator = f.operator; order.status = f.status;
+        order.remark = f.remark.trim(); order.products = products;
+        alert('Inbound order updated. Stock has been adjusted accordingly.');
+      }
+      this.inorderModal.show = false; this.detailOrder = null;
+    },
+    deleteInorder(order) {
+      if (!confirm(`Delete inbound order "${order.code}"?\nThis will DECREASE stock for all ${order.products.length} associated product(s).`)) return;
+      order.products.forEach(p=>this.adjustStock(p.product_id, -p.amount));
+      this.inorders = this.inorders.filter(o=>o.id!==order.id);
+      if (this.detailOrder?.id === order.id) this.detailOrder = null;
+      alert('Inbound order deleted. Stock has been decreased accordingly.');
+    },
+
+    // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 OUTBOUND ORDER MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+    openAddOutorder() {
+      this.outorderModal = { show:true, mode:'add', editId:null, originalLines:[],
+        form:{ code:this.genCode('OUT'), buyer:this.buyers[0]||'', operator:this.currentUserName, status:'draft', remark:'', lines:[] }
+      };
+    },
+    openEditOutorder(order) {
+      const originalLines = order.products.map(p=>({ product_id:p.product_id, amount:p.amount, unit_price:p.unit_price }));
+      this.outorderModal = { show:true, mode:'edit', editId:order.id, originalLines,
+        form:{ code:order.code, buyer:order.buyer, operator:order.operator, status:order.status, remark:order.remark,
+          lines: order.products.map(p=>({ product_id:p.product_id, amount:p.amount, unit_price:p.unit_price }))
+        }
+      };
+    },
+    getAvailableStock(line, lineIdx) {
+      const prod = this.getProductById(line.product_id);
+      if (!prod) return 0;
+      const origAmt = this.outorderModal.originalLines.filter(l=>l.product_id===line.product_id).reduce((s,l)=>s+l.amount, 0);
+      const otherNewAmt = this.outorderModal.form.lines.filter((l,i)=>i!==lineIdx && l.product_id===line.product_id).reduce((s,l)=>s+(l.amount||0), 0);
+      return prod.stock + origAmt - otherNewAmt - (line.amount||0);
+    },
+    saveOutorder() {
+      const f = this.outorderModal.form;
+      if (!f.code.trim())     { alert('Order code is required.'); return; }
+      if (!f.buyer)           { alert('Buyer is required.');      return; }
+      if (!f.operator.trim()) { alert('Operator is required.');   return; }
+      if (f.lines.length===0) { alert('Add at least one item.');  return; }
+      for (const l of f.lines) {
+        if (!l.amount || l.amount <= 0) { alert('All quantities must be > 0.'); return; }
+        if (l.unit_price === undefined || l.unit_price < 0) { alert('All unit prices must be 鈮?0.'); return; }
+      }
+      if (this.outorderModal.mode === 'add') {
+        if (this.outorders.some(o=>o.code===f.code.trim())) { alert(`Order code "${f.code.trim()}" already exists.`); return; }
+        const grouped = {};
+        f.lines.forEach(l=>{ grouped[l.product_id] = (grouped[l.product_id]||0) + (l.amount||0); });
+        for (const [pid, qty] of Object.entries(grouped)) {
+          const prod = this.getProductById(Number(pid));
+          if (!prod || prod.stock < qty) { alert(`Insufficient stock for "${prod?.name||'unknown'}".\nAvailable: ${prod?.stock??0}  |  Requested: ${qty}`); return; }
+        }
+        const products = this.linesToProducts(f.lines);
+        products.forEach(p=>this.adjustStock(p.product_id, -p.amount));
+        this.outorders.push({ id:this.nextOutorderId(), code:f.code.trim(), buyer:f.buyer, operator:f.operator, status:f.status, remark:f.remark.trim(), products });
+        alert('Outbound order created. Stock has been decreased accordingly.');
+      } else {
+        const order = this.outorders.find(o=>o.id===this.outorderModal.editId);
+        if (!order) return;
+        this.outorderModal.originalLines.forEach(l=>this.adjustStock(l.product_id, +l.amount));
+        const grouped = {};
+        f.lines.forEach(l=>{ grouped[l.product_id] = (grouped[l.product_id]||0) + (l.amount||0); });
+        for (const [pid, qty] of Object.entries(grouped)) {
+          const prod = this.getProductById(Number(pid));
+          if (!prod || prod.stock < qty) {
+            this.outorderModal.originalLines.forEach(l=>this.adjustStock(l.product_id, -l.amount));
+            alert(`Insufficient stock for "${prod?.name||'unknown'}".\nAvailable: ${prod?.stock??0}  |  Requested: ${qty}`); return;
+          }
+        }
+        const products = this.linesToProducts(f.lines);
+        products.forEach(p=>this.adjustStock(p.product_id, -p.amount));
+        order.buyer = f.buyer; order.operator = f.operator; order.status = f.status;
+        order.remark = f.remark.trim(); order.products = products;
+        alert('Outbound order updated. Stock has been adjusted accordingly.');
+      }
+      this.outorderModal.show = false; this.detailOrder = null;
+    },
+    deleteOutorder(order) {
+      if (!confirm(`Delete outbound order "${order.code}"?\nThis will RESTORE stock for all ${order.products.length} associated product(s).`)) return;
+      order.products.forEach(p=>this.adjustStock(p.product_id, +p.amount));
+      this.outorders = this.outorders.filter(o=>o.id!==order.id);
+      if (this.detailOrder?.id === order.id) this.detailOrder = null;
+      alert('Outbound order deleted. Stock has been restored accordingly.');
+    },
+
+    viewOrder(type, order) {
+      if (this.detailOrder?.id === order.id && this.detailOrderType === type) { this.detailOrder = null; }
+      else { this.detailOrderType = type; this.detailOrder = order; }
+    },
+
+    // 鈹€鈹€ Favourites 鈹€鈹€
+    isFav(item)     { return this.favourites.includes(item.id); },
+    toggleFav(item) {
+      const idx = this.favourites.indexOf(item.id);
+      if (idx===-1) this.favourites.push(item.id); else this.favourites.splice(idx,1);
+    },
+
+    nextBuyListId() {
+      return this.buyList.length ? Math.max(...this.buyList.map(item=>item.id))+1 : 1;
+    },
+    addToBuyList(item) {
+      const existing = this.buyList.find(entry=>entry.product_id===item.id);
+      if (existing) {
+        existing.quantity += 1;
+        alert(`${item.name} quantity updated in My List.`);
+        return;
+      }
+      this.buyList.push({
+        id: this.nextBuyListId(),
+        product_id: item.id,
+        sn: item.sn,
+        name: item.name,
+        category_id: item.category_id,
+        price: item.price,
+        quantity: 1,
+        note: '',
+        checked: false
+      });
+      alert(`${item.name} added to My List.`);
+    },
+    addDraftToBuyList() {
+      if (!this.buyListDraft.product_id) { alert('Please select a product first.'); return; }
+      if (!this.buyListDraft.quantity || this.buyListDraft.quantity < 1) { alert('Quantity must be at least 1.'); return; }
+      const product = this.getProductById(this.buyListDraft.product_id);
+      if (!product) { alert('Selected product was not found.'); return; }
+      const existing = this.buyList.find(entry=>entry.product_id===product.id);
+      if (existing) {
+        existing.quantity += this.buyListDraft.quantity;
+        if (this.buyListDraft.note.trim()) existing.note = this.buyListDraft.note.trim();
+      } else {
+        this.buyList.push({
+          id: this.nextBuyListId(),
+          product_id: product.id,
+          sn: product.sn,
+          name: product.name,
+          category_id: product.category_id,
+          price: product.price,
+          quantity: this.buyListDraft.quantity,
+          note: this.buyListDraft.note.trim(),
+          checked: false
+        });
+      }
+      this.buyListDraft = { product_id: '', quantity: 1, note: '' };
+    },
+    removeFromBuyList(entryId) {
+      this.buyList = this.buyList.filter(entry=>entry.id!==entryId);
+    },
+    clearCheckedBuyList() {
+      this.buyList = this.buyList.filter(entry=>!entry.checked);
+    },
+
+    // 鈹€鈹€ Chat 鈹€鈹€
+    sendChat() {
+      const text = this.chatInput.trim(); if (!text) return;
+      const from = this.currentRole==='stall_owner' ? 'Stall Owner' : 'Customer';
+      this.messages.push({ id:Date.now(), from, text, time:new Date().toLocaleTimeString() });
+      this.chatInput = '';
+      setTimeout(()=>{
+        this.messages.push({ id:Date.now()+1, from: from==='Stall Owner'?'Customer':'Stall Owner',
+          text:'Thanks for your message, we will get back to you soon.', time:new Date().toLocaleTimeString() });
+        const el = document.getElementById('chatArea'); if (el) el.scrollTop = el.scrollHeight;
+      }, 700);
+      const el = document.getElementById('chatArea'); if (el) el.scrollTop = el.scrollHeight;
+    },        
+
+    // 鈹€鈹€ Seed data (matches DB inserts) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+    initData() {
+      // products table
+      this.inventory = [
+        { id:1,  sn:'CLT-001',  name:"Men's T-Shirt",              price:59.99,  category_id:1, stock:150, description:'Premium cotton t-shirt, comfortable and breathable' },
+        { id:2,  sn:'CLT-002',  name:"Women's Dress",              price:129.99, category_id:1, stock:80,  description:'Fashionable fitted dress' },
+        { id:3,  sn:'CLT-003',  name:'Sports Pants',               price:199.99, category_id:1, stock:120, description:'High elasticity sports pants, breathable quick-dry' },
+        { id:4,  sn:'CLT-004',  name:'Winter Jacket',              price:399.99, category_id:1, stock:50,  description:'Warm and windproof winter jacket' },
+        { id:5,  sn:'ELEC-001', name:'Wireless Bluetooth Earbuds', price:299.99, category_id:2, stock:100, description:'Noise-canceling bluetooth earbuds, 20-hour battery' },
+        { id:6,  sn:'ELEC-002', name:'Phone Case',                 price:49.99,  category_id:2, stock:200, description:'Shockproof phone case, multiple colors' },
+        { id:7,  sn:'ELEC-003', name:'Charging Cable',             price:39.99,  category_id:2, stock:300, description:'Type-C fast charging cable, 2 meters long' },
+        { id:8,  sn:'FOOD-001', name:'Coffee Beans',               price:89.99,  category_id:3, stock:70,  description:'Premium coffee beans, 500g' },
+        { id:9,  sn:'FOOD-002', name:'Mixed Nuts',                 price:79.99,  category_id:3, stock:120, description:'Mixed nuts gift box' },
+        { id:10, sn:'FOOD-003', name:'Honey',                      price:149.99, category_id:3, stock:60,  description:'Natural honey, 1000ml' },
+        { id:11, sn:'HOME-001', name:'Cleaning Spray',             price:29.99,  category_id:4, stock:250, description:'Multi-purpose cleaning spray' },
+        { id:12, sn:'HOME-002', name:'Mop Set',                    price:99.99,  category_id:4, stock:90,  description:'Mop cleaning set' },
+        { id:13, sn:'HOME-003', name:'Trash Bags',                 price:19.99,  category_id:4, stock:500, description:'Thick trash bags, 50 pieces' },
+      ];
+
+      // inorder + inorder_products tables
+      this.inorders = [
+        { id:1, code:'IN2024112701', supplier:'Supplier A', operator:'Stall Owner Li', status:'completed', remark:'',
+          products:[
+            { product_id:1,  name:"Men's T-Shirt",            amount:50, unit_price:50.00 },
+            { product_id:5,  name:'Wireless Bluetooth Earbuds', amount:30, unit_price:250.00 }
+          ]
+        },
+        { id:2, code:'IN2024112702', supplier:'Supplier A', operator:'Stall Owner Li', status:'completed', remark:'',
+          products:[
+            { product_id:9,  name:'Mixed Nuts', amount:40, unit_price:70.00 },
+            { product_id:13, name:'Trash Bags', amount:25, unit_price:120.00 }
+          ]
+        }
+      ];
+
+      // outorder + outorder_products tables
+      this.outorders = [
+        { id:1, code:'OUT2024112701', buyer:'Buyer C', operator:'Stall Owner Li', status:'completed', remark:'',
+          products:[
+            { product_id:1, name:"Men's T-Shirt",  amount:20, unit_price:59.99 },
+            { product_id:2, name:"Women's Dress",  amount:15, unit_price:129.99 }
+          ]
+        },
+        { id:2, code:'OUT2024112702', buyer:'Buyer C', operator:'Stall Owner Li', status:'completed', remark:'',
+          products:[
+            { product_id:5, name:'Wireless Bluetooth Earbuds', amount:10, unit_price:299.99 },
+            { product_id:9, name:'Mixed Nuts',                 amount:20, unit_price:89.99  }
+          ]
+        }
+      ];
+
+      // favorites table (user_id=3 / customer1)
+      this.favourites = [1, 5, 9];
+
+      // customer purchase list (client-side demo data)
+      this.buyList = [
+        { id:1, product_id:3, sn:'CLT-003', name:'Sports Pants', category_id:1, price:199.99, quantity:2, note:'Need medium size if available', checked:false },
+        { id:2, product_id:9, sn:'FOOD-002', name:'Mixed Nuts', category_id:3, price:79.99, quantity:1, note:'Compare with current promotion', checked:true }
+      ];
+
+      // chat_messages table
+      this.messages = [
+        { id:1, from:'Customer',    text:'Hello, do you have sports pants available?',      time:'10:00:00' },
+        { id:2, from:'Stall Owner', text:'Yes, we have high-quality sports pants',           time:'10:01:00' },
+        { id:3, from:'Customer',    text:'I would like 20 units then, when can you ship?',  time:'10:02:00' }
+      ];
+    }
+  },
+
+  mounted() { this.initData(); }
+
+}).mount('#app');
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
