@@ -24,7 +24,9 @@ them uniformly:
 import logging
 
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.views import View
 from django.http import HttpResponse
 import os
@@ -39,6 +41,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 
 logger = logging.getLogger('apps')
+User = get_user_model()
 
 
 # ---------------------------------------------------------------------------
@@ -58,6 +61,16 @@ def fail(message='Error', code=400, data=None):
         {'success': False, 'code': code, 'message': message, 'data': data},
         status=code,
     )
+
+
+def user_payload(user):
+    """Public user fields returned to the SPA after auth operations."""
+    return {
+        'id': user.id,
+        'username': user.username,
+        'name': user.name,
+        'role': user.role,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -108,7 +121,7 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        username = request.data.get('username', '').strip()
+        username = request.data.get('username', '').strip().lower()
         password = request.data.get('password', '').strip()
 
         # ── Basic input validation ──────────────────────────────────────
@@ -138,15 +151,101 @@ class LoginView(APIView):
         return ok(
             data={
                 'token': token.key,
-                'user': {
-                    'id':       user.id,
-                    'username': user.username,
-                    'name':     user.name,
-                    'role':     user.role,
-                },
+                'user': user_payload(user),
             },
             message='Login successful.',
         )
+
+
+class RegisterView(APIView):
+    """
+    POST /api/auth/register/
+
+    Public self-registration endpoint.  New public sign-ups are always created
+    as customer users; elevated roles must still be created by an administrator
+    through the protected /api/users/ management endpoint.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username', '').strip().lower()
+        name = request.data.get('name', '').strip()
+        password = request.data.get('password', '')
+        password_confirm = request.data.get('password_confirm', '')
+
+        if not username or not name or not password or not password_confirm:
+            return fail('Username, display name, password and confirmation are required.', code=400)
+
+        if password != password_confirm:
+            return fail('Passwords do not match.', code=400, data={'password_confirm': 'Passwords do not match.'})
+
+        if User.all_objects.filter(username=username).exists():
+            return fail('This username is already taken.', code=400, data={'username': 'Already taken.'})
+
+        try:
+            validate_password(password)
+        except DjangoValidationError as exc:
+            return fail('Password does not meet the security requirements.', code=400, data={'password': list(exc.messages)})
+
+        user = User.objects.create_user(
+            username=username,
+            password=password,
+            name=name,
+            role=User.Role.CUSTOMER,
+        )
+        token, _ = Token.objects.get_or_create(user=user)
+        login(request, user)
+
+        logger.info('RegisterView: customer "%s" registered and logged in.', username)
+
+        return ok(
+            data={'token': token.key, 'user': user_payload(user)},
+            message='Registration successful.',
+            code=201,
+        )
+
+
+class ForgotPasswordView(APIView):
+    """
+    POST /api/auth/forgot-password/
+
+    Local recovery flow for the current schema. The users table has no email or
+    reset-token fields yet, so this verifies username + display name before
+    allowing a password reset. For production, replace this with emailed
+    time-limited reset tokens.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get('username', '').strip().lower()
+        name = request.data.get('name', '').strip()
+        new_password = request.data.get('new_password', '')
+        new_password_confirm = request.data.get('new_password_confirm', '')
+
+        if not username or not name or not new_password or not new_password_confirm:
+            return fail('Username, display name, new password and confirmation are required.', code=400)
+
+        if new_password != new_password_confirm:
+            return fail('New passwords do not match.', code=400, data={'new_password_confirm': 'New passwords do not match.'})
+
+        user = User.objects.filter(username=username, is_active=True).first()
+        if user is None or user.name.strip().lower() != name.lower():
+            logger.warning('ForgotPasswordView: failed recovery attempt for username="%s"', username)
+            return fail('Account details could not be verified.', code=400)
+
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as exc:
+            return fail('Password does not meet the security requirements.', code=400, data={'new_password': list(exc.messages)})
+
+        user.set_password(new_password)
+        user.save(update_fields=['password'])
+        Token.objects.filter(user=user).delete()
+
+        logger.info('ForgotPasswordView: password reset for username="%s".', username)
+        return ok(message='Password reset successful. Please sign in with your new password.')
 
 
 # ---------------------------------------------------------------------------

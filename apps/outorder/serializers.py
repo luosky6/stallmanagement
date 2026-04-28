@@ -56,7 +56,6 @@ class OutOrderProductReadSerializer(serializers.ModelSerializer):
         max_digits=12,
         decimal_places=2,
         read_only=True,
-        source='line_total',
     )
 
     class Meta:
@@ -116,12 +115,11 @@ class OutOrderReadSerializer(serializers.ModelSerializer):
     status_display    = serializers.CharField(source='get_status_display', read_only=True)
     is_editable       = serializers.BooleanField(read_only=True)
     lines             = OutOrderProductReadSerializer(many=True, read_only=True)
-    total_amount      = serializers.IntegerField(read_only=True, source='total_amount')
+    total_amount      = serializers.IntegerField(read_only=True)
     total_value       = serializers.DecimalField(
         max_digits=14,
         decimal_places=2,
         read_only=True,
-        source='total_value',
     )
 
     class Meta:

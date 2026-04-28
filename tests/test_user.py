@@ -128,6 +128,14 @@ class TestAuthAPI:
         assert data['user']['role'] == 'customer'
         assert data['user']['username'] == 'testcustomer'
 
+    def test_login_normalizes_username_case(self, api_client, customer_user):
+        response = api_client.post('/api/auth/login/', {
+            'username': 'TESTCUSTOMER',
+            'password': 'CustomerPass123!',
+        })
+        data = assert_ok(response, code=200)
+        assert data['user']['username'] == 'testcustomer'
+
     def test_login_wrong_password_returns_401(self, api_client, customer_user):
         response = api_client.post('/api/auth/login/', {
             'username': 'testcustomer',
@@ -144,6 +152,58 @@ class TestAuthAPI:
 
     def test_login_missing_fields_returns_400(self, api_client):
         response = api_client.post('/api/auth/login/', {'username': 'only'})
+        assert_fail(response, code=400)
+
+    def test_register_creates_customer_account_and_returns_token(self, api_client):
+        response = api_client.post('/api/auth/register/', {
+            'username': 'newcustomer',
+            'name': 'New Customer',
+            'password': 'CustomerPass123!',
+            'password_confirm': 'CustomerPass123!',
+        })
+        data = assert_ok(response, code=201)
+        assert 'token' in data
+        assert data['user']['username'] == 'newcustomer'
+        assert data['user']['role'] == 'customer'
+        assert User.objects.get(username='newcustomer').check_password('CustomerPass123!')
+
+    def test_register_duplicate_username_returns_400(self, api_client, customer_user):
+        response = api_client.post('/api/auth/register/', {
+            'username': 'testcustomer',
+            'name': 'Duplicate Customer',
+            'password': 'CustomerPass123!',
+            'password_confirm': 'CustomerPass123!',
+        })
+        assert_fail(response, code=400)
+
+    def test_forgot_password_resets_password_after_display_name_match(self, api_client, customer_user):
+        response = api_client.post('/api/auth/forgot-password/', {
+            'username': 'testcustomer',
+            'name': 'Test Customer',
+            'new_password': 'ResetPass123!',
+            'new_password_confirm': 'ResetPass123!',
+        })
+        assert_ok(response)
+
+        old_login = api_client.post('/api/auth/login/', {
+            'username': 'testcustomer',
+            'password': 'CustomerPass123!',
+        })
+        assert_fail(old_login, code=401)
+
+        new_login = api_client.post('/api/auth/login/', {
+            'username': 'testcustomer',
+            'password': 'ResetPass123!',
+        })
+        assert_ok(new_login)
+
+    def test_forgot_password_rejects_wrong_display_name(self, api_client, customer_user):
+        response = api_client.post('/api/auth/forgot-password/', {
+            'username': 'testcustomer',
+            'name': 'Wrong Name',
+            'new_password': 'ResetPass123!',
+            'new_password_confirm': 'ResetPass123!',
+        })
         assert_fail(response, code=400)
 
     def test_logout_invalidates_token(self, owner_client, stall_owner_user):
@@ -251,6 +311,19 @@ class TestUserCRUDAPI:
         response = admin_client.get('/api/users/?role=customer')
         data = assert_ok(response)
         assert all(u['role'] == 'customer' for u in data['results'])
+
+    def test_admin_can_list_deleted_users_when_requested(self, admin_client, customer_user):
+        customer_user.delete()
+        response = admin_client.get('/api/users/?include_deleted=true')
+        data = assert_ok(response)
+        assert any(u['username'] == 'testcustomer' and u['is_deleted'] is True for u in data['results'])
+
+    def test_admin_can_list_only_deleted_users(self, admin_client, customer_user, stall_owner_user):
+        customer_user.delete()
+        response = admin_client.get('/api/users/?deleted_only=true')
+        data = assert_ok(response)
+        assert data['results']
+        assert all(u['is_deleted'] is True for u in data['results'])
 
     def test_change_password_success(self, customer_client, customer_user):
         response = customer_client.post('/api/users/change_password/', {

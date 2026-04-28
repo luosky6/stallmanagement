@@ -1,6 +1,6 @@
-# ==============================================================================
-# StallManagement â€” Dockerfile
-# ==============================================================================
+# ============================================================================== 
+# StallManagement â€?Dockerfile
+# ============================================================================== 
 # Base image : python:3.9-slim (3.7-slim has limited availability; 3.9 is
 #              fully compatible with the Django 3.2 / Python 3.7+ codebase)
 # Server     : Daphne (ASGI, supports HTTP + WebSocket)
@@ -37,5 +37,5 @@ USER appuser
 
 EXPOSE 8000
 
-# Default command â€” overridden by docker-compose.yml
+# Default command â€?overridden by docker-compose.yml
 CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "StallManagement.asgi:application"]

@@ -94,9 +94,12 @@ class CustomUserManager(BaseUserManager):
         Forces is_active=True and role='admin'.
         """
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_active') is not True:
             raise ValueError('Superuser must have is_active=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
 
         return self._create_user(
             username, password, name, role='admin', **extra_fields

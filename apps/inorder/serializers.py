@@ -54,7 +54,6 @@ class InOrderProductReadSerializer(serializers.ModelSerializer):
     line_total = serializers.DecimalField(
         max_digits=12, decimal_places=2,
         read_only=True,
-        source='line_total',
     )
 
     class Meta:
@@ -115,10 +114,10 @@ class InOrderReadSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     is_editable    = serializers.BooleanField(read_only=True)
     lines          = InOrderProductReadSerializer(many=True, read_only=True)
-    total_amount   = serializers.IntegerField(read_only=True, source='total_amount')
+    total_amount   = serializers.IntegerField(read_only=True)
     total_value    = serializers.DecimalField(
         max_digits=14, decimal_places=2,
-        read_only=True, source='total_value',
+        read_only=True,
     )
 
     class Meta:

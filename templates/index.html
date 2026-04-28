@@ -2625,6 +2625,216 @@
       padding-left: 20px !important;
       padding-right: 20px !important;
     }
+
+    /* Real Auth Flow */
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.32);
+      border-radius: 18px;
+      background: rgba(241, 245, 249, 0.72);
+    }
+    .auth-tab {
+      min-height: 38px;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: #526173;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .auth-tab.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.10);
+    }
+    .auth-panel-title {
+      margin: 0 0 6px;
+      color: #0f172a;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .auth-panel-subtitle {
+      margin: 0 0 18px;
+      color: #64748b;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+    .auth-message,
+    .auth-error {
+      margin: 8px 0 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .auth-message {
+      color: #166534;
+      background: #dcfce7;
+      border: 1px solid #bbf7d0;
+    }
+    .auth-error {
+      color: #991b1b;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+    }
+    .auth-note {
+      display: block;
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .login-form-card form {
+      position: relative;
+      z-index: 1;
+    }
+    .login-form-card .btn[disabled] {
+      cursor: not-allowed;
+      opacity: 0.68;
+    }
+    .admin-account-layout {
+      display: block;
+    }
+    .inline-feedback {
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      border: 1px solid transparent;
+    }
+    .inline-feedback.error {
+      color: #991b1b;
+      background: #fee2e2;
+      border-color: #fecaca;
+    }
+    .inline-feedback.info {
+      color: #1e3a5f;
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+    .inline-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .accounts-table .tag {
+      min-width: 128px;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .accounts-table {
+      table-layout: fixed;
+      width: 100%;
+    }
+    .accounts-table th,
+    .accounts-table td {
+      vertical-align: middle;
+    }
+    .accounts-table th:nth-child(1),
+    .accounts-table td:nth-child(1) {
+      width: 64px;
+    }
+    .accounts-table th:nth-child(2),
+    .accounts-table td:nth-child(2) {
+      width: 150px;
+    }
+    .accounts-table th:nth-child(4),
+    .accounts-table td:nth-child(4),
+    .accounts-table th:nth-child(5),
+    .accounts-table td:nth-child(5) {
+      width: 180px;
+    }
+    .accounts-table th:nth-child(6),
+    .accounts-table td:nth-child(6) {
+      width: 220px;
+    }
+    .accounts-table th:nth-child(7),
+    .accounts-table td:nth-child(7) {
+      width: 330px;
+    }
+    .accounts-table td:nth-child(3),
+    .accounts-table td:nth-child(6) {
+      white-space: nowrap;
+    }
+    .accounts-search-bar {
+      display: grid;
+      grid-template-columns: minmax(280px, 1.6fr) minmax(180px, 1fr) minmax(220px, 1.15fr) auto;
+      gap: 14px;
+      align-items: end;
+    }
+    .accounts-search-bar .form-field {
+      min-width: 0;
+    }
+    .accounts-search-bar .btn {
+      min-width: 120px;
+      min-height: 48px;
+      padding: 0 18px;
+    }
+    .accounts-table .inline-actions {
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+    .accounts-table .inline-actions .btn {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 44px;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+    .accounts-table td:last-child {
+      min-width: 0;
+    }
+    .table-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .table-meta-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 980px) {
+      .accounts-search-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .accounts-search-bar .btn {
+        width: 100%;
+      }
+      .accounts-table .inline-actions {
+        flex-wrap: wrap;
+      }
+      .accounts-table .tag {
+        min-width: 112px;
+      }
+    }
+    @media (max-width: 720px) {
+      .accounts-search-bar {
+        grid-template-columns: 1fr;
+      }
+      .accounts-table .inline-actions {
+        gap: 8px;
+      }
+      .accounts-table .inline-actions .btn {
+        flex-basis: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2658,26 +2868,85 @@
       </div>
     </div>
     <div class="login-form-card">
-      <div class="login-row">
-        <label>Role</label>
-        <select v-model="loginForm.role" class="login-role">
-          <option value="admin">Administrator</option>
-          <option value="stall_owner">Stall Owner</option>
-          <option value="customer">Customer</option>
-        </select>
+      <div class="auth-tabs">
+        <button class="auth-tab" :class="{active: authMode==='login'}" type="button" @click="setAuthMode('login')">Sign in</button>
+        <button class="auth-tab" :class="{active: authMode==='register'}" type="button" @click="setAuthMode('register')">Register</button>
+        <button class="auth-tab" :class="{active: authMode==='forgot'}" type="button" @click="setAuthMode('forgot')">Reset</button>
       </div>
-      <div class="login-row">
-        <label>Username</label>
-        <input v-model="loginForm.username" type="text" placeholder="e.g. admin / owner1 / customer1">
-      </div>
-      <div class="login-row">
-        <label>Password</label>
-        <input v-model="loginForm.password" type="password" placeholder="Demo only - any password works">
-      </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px;" @click="doLogin">Enter workspace</button>
+
+      <h2 class="auth-panel-title">{{ authMode === 'login' ? 'Welcome back' : authMode === 'register' ? 'Create customer account' : 'Reset password' }}</h2>
+      <p class="auth-panel-subtitle">
+        {{ authMode === 'login'
+          ? 'Use a real database account. Your workspace role is loaded from your account after login.'
+          : authMode === 'register'
+            ? 'New public sign-ups are created as customer accounts. Admin and stall owner accounts must be created by an administrator.'
+            : 'Confirm your username and display name, then set a new password for this local account.' }}
+      </p>
+
+      <div v-if="authError" class="auth-error">{{ authError }}</div>
+      <div v-if="authMessage" class="auth-message">{{ authMessage }}</div>
+
+      <form v-if="authMode === 'login'" @submit.prevent="doLogin">
+        <div class="login-row">
+          <label>Username</label>
+              <input v-model="loginForm.username" type="text" autocomplete="username">
+        </div>
+        <div class="login-row">
+          <label>Password</label>
+          <input v-model="loginForm.password" type="password" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;margin-top:8px;" :disabled="authLoading">
+          {{ authLoading ? 'Signing in...' : 'Enter workspace' }}
+        </button>
+      </form>
+
+      <form v-else-if="authMode === 'register'" @submit.prevent="doRegister">
+        <div class="login-row">
+          <label>Username</label>
+          <input v-model="registerForm.username" type="text" autocomplete="username">
+        </div>
+        <div class="login-row">
+          <label>Display name</label>
+          <input v-model="registerForm.name" type="text" autocomplete="name">
+        </div>
+        <div class="login-row">
+          <label>Password</label>
+          <input v-model="registerForm.password" type="password" autocomplete="new-password">
+        </div>
+        <div class="login-row">
+          <label>Confirm password</label>
+          <input v-model="registerForm.password_confirm" type="password" autocomplete="new-password">
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;margin-top:8px;" :disabled="authLoading">
+          {{ authLoading ? 'Creating account...' : 'Create customer account' }}
+        </button>
+      </form>
+
+      <form v-else @submit.prevent="doForgotPassword">
+        <div class="login-row">
+          <label>Username</label>
+          <input v-model="forgotForm.username" type="text" autocomplete="username">
+        </div>
+        <div class="login-row">
+          <label>Display name</label>
+          <input v-model="forgotForm.name" type="text" autocomplete="name">
+        </div>
+        <div class="login-row">
+          <label>New password</label>
+          <input v-model="forgotForm.new_password" type="password" autocomplete="new-password">
+        </div>
+        <div class="login-row">
+          <label>Confirm new password</label>
+          <input v-model="forgotForm.new_password_confirm" type="password" autocomplete="new-password">
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;margin-top:8px;" :disabled="authLoading">
+          {{ authLoading ? 'Resetting...' : 'Reset password' }}
+        </button>
+        <span class="auth-note">This project has no email field yet, so reset uses username plus display name verification for now.</span>
+      </form>
       <div class="login-footer">
-        <span>Demo environment with role-based sample views.</span>
-        <span>Switch roles anytime to inspect different product flows.</span>
+        <span>Accounts are validated against the database.</span>
+        <span>Your role is applied automatically after login.</span>
       </div>
     </div>
   </div>
@@ -2689,6 +2958,7 @@
       <div class="nav-actions">
         <template v-if="currentRole === 'admin'">
           <button :class="{active: page==='adminOverview'}" @click="page='adminOverview'">Overview</button>
+          <button :class="{active: page==='accounts'}" @click="page='accounts'; loadAdminUsers()">Accounts</button>
           <button :class="{active: page==='inventory'}" @click="page='inventory'">Products</button>
           <button :class="{active: page==='categories'}" @click="page='categories'">Categories</button>
           <button :class="{active: page==='inorders'}" @click="page='inorders'">Inbound</button>
@@ -2771,6 +3041,141 @@
       </div>
     </section>
 
+    <section v-if="page==='accounts' && currentRole==='admin'">
+      <h2>Account Management</h2>
+      <p class="section-desc">Create administrator or stall owner accounts, then review the current account list from the database.</p>
+
+      <div class="card-row">
+        <div class="card">
+          <div class="card-title">Total Accounts</div>
+          <div class="card-value">{{ adminUsers.length }}</div>
+          <div class="card-tag">All non-deleted user accounts currently returned by the API.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Administrators</div>
+          <div class="card-value">{{ adminUsers.filter(user=>user.role==='admin').length }}</div>
+          <div class="card-tag">Full management access.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Stall Owners</div>
+          <div class="card-value">{{ adminUsers.filter(user=>user.role==='stall_owner').length }}</div>
+          <div class="card-tag">Can operate products and orders.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Active Accounts</div>
+          <div class="card-value">{{ adminUsers.filter(user=>user.is_active).length }}</div>
+          <div class="card-tag">Disabled accounts remain blocked from login.</div>
+        </div>
+      </div>
+
+      <div class="admin-account-layout">
+        <div class="card">
+          <div v-if="adminUsersError" class="inline-feedback error" style="margin-bottom:12px;">{{ adminUsersError }}</div>
+          <div v-if="adminUserMessage" class="inline-feedback info" style="margin-bottom:12px;">{{ adminUserMessage }}</div>
+          <div class="table-meta">
+            <div>
+              <div class="card-title">Existing Accounts</div>
+              <div style="font-size:12px;color:#64748b;">Search and verify the privileged accounts already provisioned in the system.</div>
+            </div>
+            <div class="table-meta-actions">
+              <button class="btn btn-primary btn-sm" :disabled="adminUsersLoading" @click="openCreateAccountModal">
+                + Create account
+              </button>
+              <button class="btn btn-secondary btn-sm" :disabled="adminUsersLoading" @click="loadAdminUsers">
+                {{ adminUsersLoading ? 'Refreshing...' : 'Refresh list' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="search-bar accounts-search-bar" style="margin-bottom:0;">
+            <div class="form-field">
+              <label>Search User</label>
+              <input v-model.trim="adminUserSearch">
+            </div>
+            <div class="form-field">
+              <label>Role</label>
+              <select v-model="adminUserRoleFilter">
+                <option value="">All roles</option>
+                <option value="admin">Administrator</option>
+                <option value="stall_owner">Stall Owner</option>
+                <option value="customer">Customer</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>State</label>
+              <select v-model="adminUserStateFilter">
+                <option value="active">Active and disabled</option>
+                <option value="all">All including deleted</option>
+                <option value="disabled">Disabled only</option>
+                <option value="deleted">Deleted only</option>
+              </select>
+            </div>
+            <button class="btn btn-outline" @click="adminUserSearch=''; adminUserRoleFilter=''; adminUserStateFilter='active'">Reset</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="accounts-table">
+              <colgroup>
+                <col style="width:64px;">
+                <col style="width:160px;">
+                <col>
+                <col style="width:180px;">
+                <col style="width:180px;">
+                <col style="width:220px;">
+                <col style="width:330px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Display Name</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="filteredAdminUsers.length===0">
+                  <td colspan="7" style="text-align:center;color:#718096;padding:20px;">
+                    {{ adminUsersLoading ? 'Loading accounts...' : 'No accounts match the current filters.' }}
+                  </td>
+                </tr>
+                <tr v-for="user in filteredAdminUsers" :key="user.id">
+                  <td>{{ user.id }}</td>
+                  <td><strong>{{ user.username }}</strong></td>
+                  <td>{{ user.name }}</td>
+                  <td>
+                    <span class="tag" :class="user.role==='admin' ? 'tag-warning' : user.role==='stall_owner' ? 'tag-info' : ''">
+                      {{ user.role_display || user.role }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="tag" :class="user.is_deleted ? 'tag-error' : user.is_active ? 'tag-success' : 'tag-warning'">
+                      {{ user.is_deleted ? 'Deleted' : user.is_active ? 'Active' : 'Disabled' }}
+                    </span>
+                  </td>
+                  <td>{{ formatDateTime(user.create_time) }}</td>
+                  <td>
+                    <div class="inline-actions">
+                      <template v-if="!user.is_deleted">
+                        <button class="btn btn-secondary btn-sm" @click="openEditAccountModal(user)">Edit</button>
+                        <button class="btn btn-warning btn-sm" @click="toggleAccountActive(user)">
+                          {{ user.is_active ? 'Disable' : 'Enable' }}
+                        </button>
+                        <button class="btn btn-danger btn-sm" @click="deleteAdminAccount(user)">Delete</button>
+                      </template>
+                      <button v-else class="btn btn-success btn-sm" @click="restoreAdminAccount(user)">Restore</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
          PRODUCT MANAGEMENT
     鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 -->
@@ -2802,7 +3207,7 @@
       <div class="search-bar">
         <div class="form-field">
           <label>Search (ID / Name / SN)</label>
-          <input v-model="invSearch" placeholder="e.g. 5, T-Shirt, CLT-001">
+          <input v-model="invSearch">
         </div>
         <div class="form-field">
           <label>Category</label>
@@ -2885,7 +3290,7 @@
       <div class="search-bar">
         <div class="form-field">
           <label>Search Category</label>
-          <input v-model="catSearch" placeholder="Category name...">
+          <input v-model="catSearch">
         </div>
         <button class="btn btn-outline" @click="catSearch=''">Reset</button>
         <button class="btn btn-primary" style="margin-left:auto;" @click="openAddCategory">+ Add Category</button>
@@ -2954,15 +3359,15 @@
       <div class="search-bar">
         <div class="form-field">
           <label>Code / ID</label>
-          <input v-model="inSearch" placeholder="IN2024112701 or 1">
+          <input v-model="inSearch">
         </div>
         <div class="form-field">
           <label>Supplier</label>
-          <input v-model="inSearchSupplier" placeholder="Supplier name">
+          <input v-model="inSearchSupplier">
         </div>
         <div class="form-field">
           <label>Operator</label>
-          <input v-model="inSearchOperator" placeholder="Operator name">
+          <input v-model="inSearchOperator">
         </div>
         <div class="form-field">
           <label>Status</label>
@@ -3094,15 +3499,15 @@
       <div class="search-bar">
         <div class="form-field">
           <label>Code / ID</label>
-          <input v-model="outSearch" placeholder="OUT2024112701 or 1">
+          <input v-model="outSearch">
         </div>
         <div class="form-field">
           <label>Buyer</label>
-          <input v-model="outSearchBuyer" placeholder="Buyer name">
+          <input v-model="outSearchBuyer">
         </div>
         <div class="form-field">
           <label>Operator</label>
-          <input v-model="outSearchOperator" placeholder="Operator name">
+          <input v-model="outSearchOperator">
         </div>
         <div class="form-field">
           <label>Status</label>
@@ -3226,7 +3631,7 @@
       <div class="search-bar">
         <div class="form-field">
           <label>Search (Name / Phone)</label>
-          <input v-model="custSearch" placeholder="e.g. Supplier A">
+          <input v-model="custSearch">
         </div>
         <div class="form-field">
           <label>Type</label>
@@ -3294,7 +3699,7 @@
       <div class="search-bar">
         <div class="form-field">
           <label>Search Stalls</label>
-          <input v-model="stallSearch" placeholder="Stall name or owner...">
+          <input v-model="stallSearch">
         </div>
         <button class="btn btn-outline" @click="stallSearch=''">Reset</button>
         <button class="btn btn-primary" style="margin-left:auto;" @click="openAddStall">+ Add Stall</button>
@@ -3400,7 +3805,7 @@
             </div>
             <div class="form-field">
               <label>Note</label>
-              <input v-model.trim="buyListDraft.note" placeholder="Brand, size, or reminder">
+              <input v-model.trim="buyListDraft.note">
             </div>
             <button class="btn btn-primary" @click="addDraftToBuyList">Add item</button>
           </div>
@@ -3476,7 +3881,7 @@
           <p class="section-desc" style="margin-top:0;">Use filters to reduce the list, then move promising items into My List.</p>
           <div class="form-field" style="margin-top:18px;">
             <label>Search products</label>
-            <input v-model="customerSearch" placeholder="Search by product name">
+            <input v-model="customerSearch">
           </div>
           <div class="form-field" style="margin-top:14px;">
             <label>Category</label>
@@ -3610,7 +4015,7 @@
             </div>
           </div>
           <div class="chat-compose">
-            <input v-model="chatInput" type="text" placeholder="Ask about stock, pricing, or your planned items...">
+            <input v-model="chatInput" type="text">
             <button class="btn btn-primary" @click="sendChat">Send message</button>
           </div>
         </div>
@@ -3629,11 +4034,11 @@
       <div class="form-grid">
         <div class="form-field">
           <label>SN (Product Code) *</label>
-          <input v-model="productModal.form.sn" placeholder="e.g. CLT-010">
+          <input v-model="productModal.form.sn">
         </div>
         <div class="form-field">
           <label>Product Name *</label>
-          <input v-model="productModal.form.name" placeholder="e.g. Blue T-Shirt">
+          <input v-model="productModal.form.name">
         </div>
         <div class="form-field">
           <label>Category *</label>
@@ -3655,7 +4060,7 @@
         </div>
         <div class="form-field" style="grid-column:1/-1;">
           <label>Description</label>
-          <input v-model="productModal.form.description" placeholder="Short product description">
+          <input v-model="productModal.form.description">
         </div>
       </div>
       <div class="modal-footer">
@@ -3675,11 +4080,11 @@
       <h3>{{ categoryModal.mode==='add' ? '+ Add New Category' : 'Edit Category' }}</h3>
       <div class="form-field" style="margin-bottom:10px;">
         <label>Category Name *</label>
-        <input v-model="categoryModal.form.name" placeholder="e.g. Toys & Games">
+        <input v-model="categoryModal.form.name">
       </div>
       <div class="form-field" style="margin-bottom:10px;">
         <label>Description</label>
-        <input v-model="categoryModal.form.description" placeholder="Short description of this category">
+        <input v-model="categoryModal.form.description">
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" @click="categoryModal.show=false">Cancel</button>
@@ -3699,11 +4104,11 @@
       <div class="form-grid">
         <div class="form-field">
           <label>Customer Name *</label>
-          <input v-model="customerModal.form.name" placeholder="e.g. Supplier D">
+          <input v-model="customerModal.form.name">
         </div>
         <div class="form-field">
           <label>Phone *</label>
-          <input v-model="customerModal.form.phone" placeholder="e.g. 13800000005">
+          <input v-model="customerModal.form.phone">
         </div>
         <div class="form-field">
           <label>Type *</label>
@@ -3714,7 +4119,7 @@
         </div>
         <div class="form-field" style="grid-column:1/-1;">
           <label>Address *</label>
-          <input v-model="customerModal.form.address" placeholder="e.g. 123 Main Street">
+          <input v-model="customerModal.form.address">
         </div>
       </div>
       <div class="modal-footer">
@@ -3735,11 +4140,11 @@
       <div class="form-grid">
         <div class="form-field">
           <label>Stall Name *</label>
-          <input v-model="stallModal.form.name" placeholder="e.g. Zhang's Fresh Produce">
+          <input v-model="stallModal.form.name">
         </div>
         <div class="form-field">
           <label>Owner Name *</label>
-          <input v-model="stallModal.form.owner" placeholder="e.g. Owner Zhang">
+          <input v-model="stallModal.form.owner">
         </div>
         <div class="form-field">
           <label>Status</label>
@@ -3751,7 +4156,7 @@
         </div>
         <div class="form-field" style="grid-column:1/-1;">
           <label>Description</label>
-          <input v-model="stallModal.form.description" placeholder="Short stall description">
+          <input v-model="stallModal.form.description">
         </div>
       </div>
       <div class="modal-footer">
@@ -3772,7 +4177,7 @@
       <div class="form-grid">
         <div class="form-field">
           <label>Order Code *</label>
-          <input v-model="inorderModal.form.code" placeholder="e.g. IN2024120101"
+          <input v-model="inorderModal.form.code"
                  :disabled="inorderModal.mode==='edit'">
         </div>
         <div class="form-field">
@@ -3783,7 +4188,7 @@
         </div>
         <div class="form-field">
           <label>Operator *</label>
-          <input v-model="inorderModal.form.operator" placeholder="Handler name">
+          <input v-model="inorderModal.form.operator">
         </div>
         <div class="form-field">
           <label>Status</label>
@@ -3795,7 +4200,7 @@
         </div>
         <div class="form-field" style="grid-column:1/-1;">
           <label>Remark</label>
-          <input v-model="inorderModal.form.remark" placeholder="Optional remark">
+          <input v-model="inorderModal.form.remark">
         </div>
       </div>
       <div class="items-editor">
@@ -3858,7 +4263,7 @@
       <div class="form-grid">
         <div class="form-field">
           <label>Order Code *</label>
-          <input v-model="outorderModal.form.code" placeholder="e.g. OUT2024120101"
+          <input v-model="outorderModal.form.code"
                  :disabled="outorderModal.mode==='edit'">
         </div>
         <div class="form-field">
@@ -3869,7 +4274,7 @@
         </div>
         <div class="form-field">
           <label>Operator *</label>
-          <input v-model="outorderModal.form.operator" placeholder="Handler name">
+          <input v-model="outorderModal.form.operator">
         </div>
         <div class="form-field">
           <label>Status</label>
@@ -3881,7 +4286,7 @@
         </div>
         <div class="form-field" style="grid-column:1/-1;">
           <label>Remark</label>
-          <input v-model="outorderModal.form.remark" placeholder="Optional remark">
+          <input v-model="outorderModal.form.remark">
         </div>
       </div>
       <div class="items-editor">
@@ -3947,6 +4352,103 @@
     </div>
   </div>
 
+  <div v-if="createAccountModalOpen" class="modal-overlay" @click.self="closeCreateAccountModal">
+    <div class="modal-box-sm">
+      <h3>Create Internal Account</h3>
+      <div class="section-desc" style="margin-bottom:12px;">
+        Provision an administrator or stall owner account with database-backed login.
+      </div>
+      <div v-if="adminUsersError" class="inline-feedback error" style="margin-bottom:12px;">{{ adminUsersError }}</div>
+      <div class="form-grid" style="grid-template-columns:1fr;">
+        <div class="form-field">
+          <label>Username</label>
+          <input v-model.trim="adminAccountForm.username">
+        </div>
+        <div class="form-field">
+          <label>Display Name</label>
+          <input v-model.trim="adminAccountForm.name">
+        </div>
+        <div class="form-field">
+          <label>Role</label>
+          <select v-model="adminAccountForm.role">
+            <option value="stall_owner">Stall Owner</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Password</label>
+          <input v-model="adminAccountForm.password" type="password">
+        </div>
+        <div class="form-field">
+          <label>Confirm Password</label>
+          <input v-model="adminAccountForm.password_confirm" type="password">
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="adminAccountForm.is_active">
+            <option :value="true">Active</option>
+            <option :value="false">Disabled</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="closeCreateAccountModal">Cancel</button>
+        <button class="btn btn-primary" :disabled="adminUsersLoading" @click="saveAdminAccount">
+          {{ adminUsersLoading ? 'Saving...' : 'Create account' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div v-if="adminAccountEditModal.show" class="modal-overlay" @click.self="closeEditAccountModal">
+    <div class="modal-box-sm">
+      <h3>Edit Account</h3>
+      <div class="section-desc" style="margin-bottom:12px;">
+        Update profile details for <strong>{{ adminAccountEditModal.username }}</strong>. Add a new password below only if you want to change it.
+      </div>
+      <div v-if="adminUsersError" class="inline-feedback error" style="margin-bottom:12px;">{{ adminUsersError }}</div>
+      <div class="form-grid" style="grid-template-columns:1fr;">
+        <div class="form-field">
+          <label>Username</label>
+          <input :value="adminAccountEditModal.username" disabled>
+        </div>
+        <div class="form-field">
+          <label>Display Name</label>
+          <input v-model.trim="adminAccountEditModal.name">
+        </div>
+        <div class="form-field">
+          <label>Role</label>
+          <select v-model="adminAccountEditModal.role">
+            <option value="stall_owner">Stall Owner</option>
+            <option value="admin">Administrator</option>
+            <option value="customer">Customer</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select v-model="adminAccountEditModal.is_active">
+            <option :value="true">Active</option>
+            <option :value="false">Disabled</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>New Password</label>
+          <input v-model="adminAccountEditModal.password" type="password">
+        </div>
+        <div class="form-field">
+          <label>Confirm New Password</label>
+          <input v-model="adminAccountEditModal.password_confirm" type="password">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" @click="closeEditAccountModal">Cancel</button>
+        <button class="btn btn-primary" :disabled="adminUsersLoading" @click="saveEditAccount">
+          {{ adminUsersLoading ? 'Saving...' : 'Save changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /#app -->
 
 <script>
@@ -3961,7 +4463,40 @@ createApp({
       currentUserName: '',
       page: 'adminOverview',
 
-      loginForm: { role: 'admin', username: '', password: '' },
+      authMode: 'login',
+      authLoading: false,
+      authError: '',
+      authMessage: '',
+      authToken: '',
+      adminUsers: [],
+      adminUsersLoading: false,
+      adminUsersError: '',
+      adminUserMessage: '',
+      createAccountModalOpen: false,
+      adminUserSearch: '',
+      adminUserRoleFilter: '',
+      adminUserStateFilter: 'active',
+      adminAccountForm: {
+        username: '',
+        name: '',
+        role: 'stall_owner',
+        password: '',
+        password_confirm: '',
+        is_active: true
+      },
+      adminAccountEditModal: {
+        show: false,
+        userId: null,
+        username: '',
+        name: '',
+        role: 'stall_owner',
+        is_active: true,
+        password: '',
+        password_confirm: ''
+      },
+      loginForm: { username: '', password: '' },
+      registerForm: { username: '', name: '', password: '', password_confirm: '' },
+      forgotForm: { username: '', name: '', new_password: '', new_password_confirm: '' },
 
       // categories table (now with descriptions)
       dbCategories: [
@@ -4037,6 +4572,27 @@ createApp({
     currentRoleLabel() {
       const m = { admin:'Administrator', stall_owner:'Stall Owner', customer:'Customer' };
       return m[this.currentRole] || '';
+    },
+    filteredAdminUsers() {
+      let list = this.adminUsers;
+      if (this.adminUserSearch.trim()) {
+        const q = this.adminUserSearch.trim().toLowerCase();
+        list = list.filter(user =>
+          user.username.toLowerCase().includes(q) ||
+          (user.name || '').toLowerCase().includes(q)
+        );
+      }
+      if (this.adminUserRoleFilter) {
+        list = list.filter(user => user.role === this.adminUserRoleFilter);
+      }
+      if (this.adminUserStateFilter === 'active') {
+        list = list.filter(user => !user.is_deleted);
+      } else if (this.adminUserStateFilter === 'deleted') {
+        list = list.filter(user => user.is_deleted);
+      } else if (this.adminUserStateFilter === 'disabled') {
+        list = list.filter(user => !user.is_deleted && !user.is_active);
+      }
+      return list;
     },
     currentStallName()        { return this.stallInfo[0]?.name || ''; },
     currentStallDescription() { return this.stallInfo[0]?.description || ''; },
@@ -4187,20 +4743,328 @@ createApp({
       return prefix + t.getFullYear() + String(t.getMonth()+1).padStart(2,'0') + String(t.getDate()).padStart(2,'0')
         + String(t.getHours()).padStart(2,'0') + String(t.getMinutes()).padStart(2,'0') + String(t.getSeconds()).padStart(2,'0');
     },
+    formatDateTime(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString();
+    },
 
     // 鈹€鈹€ Auth 鈹€鈹€
-    doLogin() {
-      if (!this.loginForm.username.trim()) { alert('Please enter a username.'); return; }
-      this.loggedIn = true;
-      this.currentRole = this.loginForm.role;
-      this.currentUserName = this.loginForm.username.trim();
-      this.page = this.currentRole==='admin' ? 'adminOverview' : this.currentRole==='stall_owner' ? 'stallOverview' : 'mobile';
+    setAuthMode(mode) {
+      this.authMode = mode;
+      this.authError = '';
+      this.authMessage = '';
     },
-    logout() {
-      this.loggedIn = false; this.currentRole = null; this.currentUserName = '';
-      this.page = 'adminOverview'; this.invSearch = ''; this.selectedCategory = 'All';
-      this.customerSearch = ''; this.customerCategory = 'All'; this.detailOrder = null;
+    resetAdminAccountForm() {
+      this.adminAccountForm = {
+        username: '',
+        name: '',
+        role: 'stall_owner',
+        password: '',
+        password_confirm: '',
+        is_active: true
+      };
+    },
+    openCreateAccountModal() {
+      this.adminUsersError = '';
+      this.resetAdminAccountForm();
+      this.createAccountModalOpen = true;
+    },
+    closeCreateAccountModal() {
+      this.createAccountModalOpen = false;
+      this.resetAdminAccountForm();
+    },
+    openEditAccountModal(user) {
+      this.adminUsersError = '';
+      this.adminAccountEditModal = {
+        show: true,
+        userId: user.id,
+        username: user.username,
+        name: user.name || '',
+        role: user.role,
+        is_active: user.is_active,
+        password: '',
+        password_confirm: ''
+      };
+    },
+    closeEditAccountModal() {
+      this.adminAccountEditModal = {
+        show: false,
+        userId: null,
+        username: '',
+        name: '',
+        role: 'stall_owner',
+        is_active: true,
+        password: '',
+        password_confirm: ''
+      };
+    },
+    getCsrfToken() {
+      const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : '';
+    },
+    authHeaders(includeAuth = false) {
+      const headers = { 'Content-Type': 'application/json' };
+      const csrfToken = this.getCsrfToken();
+      if (csrfToken) headers['X-CSRFToken'] = csrfToken;
+      if (includeAuth && this.authToken) headers.Authorization = `Token ${this.authToken}`;
+      return headers;
+    },
+    async sendJson(method, url, payload = null, includeAuth = false) {
+      const options = {
+        method,
+        credentials: 'same-origin',
+        headers: this.authHeaders(includeAuth),
+      };
+      if (payload !== null) options.body = JSON.stringify(payload);
+      const response = await fetch(url, options);
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || body.success === false) {
+        const details = body.data ? Object.values(body.data).flat().join(' ') : '';
+        throw new Error(details || body.message || 'Request failed.');
+      }
+      return body.data || {};
+    },
+    async getJson(url, includeAuth = false) {
+      const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: this.authHeaders(includeAuth),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok || body.success === false) {
+        const details = body.data ? Object.values(body.data).flat().join(' ') : '';
+        throw new Error(details || body.message || 'Request failed.');
+      }
+      return body.data || {};
+    },
+    async authRequest(url, payload, includeAuth = false) {
+      return this.sendJson('POST', url, payload || {}, includeAuth);
+    },
+    async loadAdminUsers() {
+      if (this.currentRole !== 'admin') return;
+      this.adminUsersLoading = true;
+      this.adminUsersError = '';
+      try {
+        const data = await this.getJson('/api/users/?page_size=100&include_deleted=true', true);
+        this.adminUsers = Array.isArray(data.results) ? data.results : [];
+      } catch (err) {
+        this.adminUsersError = err.message || 'Failed to load accounts.';
+      } finally {
+        this.adminUsersLoading = false;
+      }
+    },
+    async saveAdminAccount() {
+      this.adminUsersError = '';
+      this.adminUserMessage = '';
+      if (!this.adminAccountForm.username.trim() || !this.adminAccountForm.name.trim()) {
+        this.adminUsersError = 'Username and display name are required.';
+        return;
+      }
+      if (!this.adminAccountForm.password || !this.adminAccountForm.password_confirm) {
+        this.adminUsersError = 'Please enter and confirm the password.';
+        return;
+      }
+      this.adminUsersLoading = true;
+      try {
+        const payload = {
+          username: this.adminAccountForm.username.trim(),
+          name: this.adminAccountForm.name.trim(),
+          role: this.adminAccountForm.role,
+          password: this.adminAccountForm.password,
+          password_confirm: this.adminAccountForm.password_confirm,
+          is_active: this.adminAccountForm.is_active,
+        };
+        const user = await this.authRequest('/api/users/', payload, true);
+        this.adminUserMessage = `Created ${user.role_display || user.role} account "${user.username}".`;
+        this.closeCreateAccountModal();
+        await this.loadAdminUsers();
+      } catch (err) {
+        this.adminUsersError = err.message || 'Failed to create the account.';
+      } finally {
+        this.adminUsersLoading = false;
+      }
+    },
+    async saveEditAccount() {
+      this.adminUsersError = '';
+      this.adminUserMessage = '';
+      if (!this.adminAccountEditModal.name.trim()) {
+        this.adminUsersError = 'Display name is required.';
+        return;
+      }
+      const hasNewPassword = !!this.adminAccountEditModal.password || !!this.adminAccountEditModal.password_confirm;
+      if (hasNewPassword && (!this.adminAccountEditModal.password || !this.adminAccountEditModal.password_confirm)) {
+        this.adminUsersError = 'Please enter and confirm the new password.';
+        return;
+      }
+      this.adminUsersLoading = true;
+      try {
+        const payload = {
+          name: this.adminAccountEditModal.name.trim(),
+          role: this.adminAccountEditModal.role,
+          is_active: this.adminAccountEditModal.is_active,
+        };
+        if (hasNewPassword) {
+          payload.password = this.adminAccountEditModal.password;
+          payload.password_confirm = this.adminAccountEditModal.password_confirm;
+        }
+        const user = await this.sendJson(
+          'PATCH',
+          `/api/users/${this.adminAccountEditModal.userId}/`,
+          payload,
+          true
+        );
+        this.adminUserMessage = `Updated "${user.username}".`;
+        this.closeEditAccountModal();
+        await this.loadAdminUsers();
+      } catch (err) {
+        this.adminUsersError = err.message || 'Failed to update the account.';
+      } finally {
+        this.adminUsersLoading = false;
+      }
+    },
+    async toggleAccountActive(user) {
+      this.adminUsersError = '';
+      this.adminUserMessage = '';
+      this.adminUsersLoading = true;
+      try {
+        const updated = await this.sendJson(
+          'PATCH',
+          `/api/users/${user.id}/`,
+          { is_active: !user.is_active },
+          true
+        );
+        this.adminUserMessage = `${updated.username} is now ${updated.is_active ? 'active' : 'disabled'}.`;
+        await this.loadAdminUsers();
+      } catch (err) {
+        this.adminUsersError = err.message || 'Failed to update account status.';
+      } finally {
+        this.adminUsersLoading = false;
+      }
+    },
+    async deleteAdminAccount(user) {
+      this.adminUsersError = '';
+      this.adminUserMessage = '';
+      if (!confirm(`Soft-delete account "${user.username}"? This user will no longer be able to log in.`)) return;
+      this.adminUsersLoading = true;
+      try {
+        await this.sendJson('DELETE', `/api/users/${user.id}/delete/`, null, true);
+        this.adminUserMessage = `Account "${user.username}" has been deleted.`;
+        await this.loadAdminUsers();
+      } catch (err) {
+        this.adminUsersError = err.message || 'Failed to delete the account.';
+      } finally {
+        this.adminUsersLoading = false;
+      }
+    },
+    async restoreAdminAccount(user) {
+      this.adminUsersError = '';
+      this.adminUserMessage = '';
+      this.adminUsersLoading = true;
+      try {
+        await this.authRequest(`/api/users/${user.id}/restore/`, {}, true);
+        this.adminUserMessage = `Account "${user.username}" has been restored.`;
+        await this.loadAdminUsers();
+      } catch (err) {
+        this.adminUsersError = err.message || 'Failed to restore the account.';
+      } finally {
+        this.adminUsersLoading = false;
+      }
+    },
+    homePageForRole(role) {
+      return role === 'admin' ? 'adminOverview' : role === 'stall_owner' ? 'stallOverview' : 'mobile';
+    },
+    applyAuthenticatedUser(payload) {
+      const user = payload.user || payload;
+      if (!user || !user.role) throw new Error('The server did not return a valid user profile.');
+      if (payload.token) {
+        this.authToken = payload.token;
+      }
+      this.loggedIn = true;
+      this.currentRole = user.role;
+      this.currentUserName = user.username || user.name || '';
+      this.page = this.homePageForRole(user.role);
+      this.authError = '';
+      if (user.role === 'admin') this.loadAdminUsers();
+    },
+    clearAuthState() {
+      this.loggedIn = false;
+      this.currentRole = null;
+      this.currentUserName = '';
+      this.authToken = '';
+      this.page = 'adminOverview';
+      this.adminUsers = [];
+      this.adminUsersError = '';
+      this.adminUserMessage = '';
+      this.adminUserSearch = '';
+      this.adminUserRoleFilter = '';
+      this.adminUserStateFilter = 'active';
+      this.resetAdminAccountForm();
+      this.closeCreateAccountModal();
+      this.closeEditAccountModal();
+      this.invSearch = '';
+      this.selectedCategory = 'All';
+      this.customerSearch = '';
+      this.customerCategory = 'All';
+      this.detailOrder = null;
       this.buyListDraft = { product_id: '', quantity: 1, note: '' };
+    },
+    async doLogin() {
+      this.authError = '';
+      this.authMessage = '';
+      if (!this.loginForm.username.trim() || !this.loginForm.password) {
+        this.authError = 'Please enter both username and password.';
+        return;
+      }
+      this.authLoading = true;
+      try {
+        const data = await this.authRequest('/api/auth/login/', this.loginForm);
+        this.applyAuthenticatedUser(data);
+      } catch (err) {
+        this.authError = err.message || 'Login failed.';
+      } finally {
+        this.authLoading = false;
+      }
+    },
+    async doRegister() {
+      this.authError = '';
+      this.authMessage = '';
+      this.authLoading = true;
+      try {
+        const data = await this.authRequest('/api/auth/register/', this.registerForm);
+        this.applyAuthenticatedUser(data);
+      } catch (err) {
+        this.authError = err.message || 'Registration failed.';
+      } finally {
+        this.authLoading = false;
+      }
+    },
+    async doForgotPassword() {
+      this.authError = '';
+      this.authMessage = '';
+      this.authLoading = true;
+      try {
+        await this.authRequest('/api/auth/forgot-password/', this.forgotForm);
+        this.forgotForm = { username: '', name: '', new_password: '', new_password_confirm: '' };
+        this.authMode = 'login';
+        this.authMessage = 'Password reset successfully. Please sign in with the new password.';
+      } catch (err) {
+        this.authError = err.message || 'Password reset failed.';
+      } finally {
+        this.authLoading = false;
+      }
+    },
+    async logout() {
+      try {
+        if (this.authToken) await this.authRequest('/api/auth/logout/', {}, true);
+      } catch (err) {
+        console.warn('Logout request failed; clearing local session anyway.', err);
+      }
+      this.clearAuthState();
+    },
+    async restoreSession() {
+      this.clearAuthState();
     },
 
     // 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲 PRODUCT MANAGEMENT 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲
@@ -4668,7 +5532,11 @@ createApp({
     }
   },
 
-  mounted() { this.initData(); }
+  mounted() {
+    this.initData();
+    localStorage.removeItem('marketstallAuthToken');
+    this.restoreSession();
+  }
 
 }).mount('#app');
 </script>

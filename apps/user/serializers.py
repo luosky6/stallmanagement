@@ -58,6 +58,7 @@ class UserReadSerializer(serializers.ModelSerializer):
             'role',
             'role_display',
             'is_active',
+            'is_deleted',
             'create_time',
             'modify_time',
         ]
@@ -110,7 +111,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         """Normalise to lowercase and check uniqueness."""
         value = value.strip().lower()
-        if User.objects.filter(username=value).exists():
+        if User.all_objects.filter(username=value).exists():
             raise serializers.ValidationError(
                 f'The username "{value}" is already taken.'
             )

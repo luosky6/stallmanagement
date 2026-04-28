@@ -18,7 +18,7 @@ path and is not part of the /api/auth/ prefix group.
 """
 
 from django.urls import path
-from .views import LoginView, LogoutView, UserProfileView
+from .views import ForgotPasswordView, LoginView, LogoutView, RegisterView, UserProfileView
 
 app_name = 'common'
 
@@ -27,6 +27,14 @@ urlpatterns = [
     # POST { "username": "...", "password": "..." }
     # Returns: { token, user: { id, username, name, role } }
     path('login/',  LoginView.as_view(),       name='login'),
+
+    # POST { username, name, password, password_confirm }
+    # Public self-registration; always creates a customer account.
+    path('register/', RegisterView.as_view(), name='register'),
+
+    # POST { username, name, new_password, new_password_confirm }
+    # Local account recovery flow for the current no-email user schema.
+    path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
 
     # POST (no body required — token is read from Authorization header / session)
     # Deletes the auth token and clears the Django session

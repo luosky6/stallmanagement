@@ -77,7 +77,14 @@ class UserListCreateView(APIView):
 
     # ── GET ─────────────────────────────────────────────────────────────
     def get(self, request):
-        qs = User.objects.all().order_by('username')
+        include_deleted = request.query_params.get('include_deleted', 'false').lower() == 'true'
+        deleted_only = request.query_params.get('deleted_only', 'false').lower() == 'true'
+
+        manager = User.all_objects if include_deleted or deleted_only else User.objects
+        qs = manager.all().order_by('username')
+
+        if deleted_only:
+            qs = qs.filter(is_deleted=True)
 
         # ── Filters ─────────────────────────────────────────────────────
         role      = request.query_params.get('role')
